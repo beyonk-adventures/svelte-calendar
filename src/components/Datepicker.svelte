@@ -5,6 +5,7 @@
   import { createEventDispatcher, setContext, getContext } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
   import DateView from './DateView.svelte'
+  import TimeView from './TimeView.svelte'
 
   export let rangePicker = false
   export let placeholder = 'Choose Date'
@@ -137,7 +138,7 @@
     </div>
     <div slot="contents">
       <div class="calendar" class:is-range-picker={config.isRangePicker}>
-        <svelte:component this={DateView} on:close={close} />
+        <svelte:component this={TimeView} on:close={close} />
       </div>
     </div>
   </Popover>
