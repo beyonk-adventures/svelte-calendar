@@ -53,6 +53,15 @@
   $: canIncrementSecMonth = $monthView.secMonthIndex < months.length - 1
   $: canDecrementSecMonth = $monthView.secMonthIndex > 0
 
+  function changeMonth (selectedMonth) {
+    month.set(selectedMonth)
+    highlighted.set(new Date($year, $month, 1))
+  }
+
+  function changeSecMonth (selectedMonth) {
+    secMonth.set(selectedMonth)
+  }
+
   function incrementMonth (direction, date = 1) {
     if (direction === 1 && !canIncrementMonth) return
     if (direction === -1 && !canDecrementMonth) return
