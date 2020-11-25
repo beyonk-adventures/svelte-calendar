@@ -2,12 +2,13 @@
   import Months from './Month.svelte'
   import NavBar from './NavBar.svelte'
   import Popover from './Popover.svelte'
-  import { formatDate } from 'timeUtils'
   import { getMonths } from './lib/helpers'
   import { getDay } from './lib/get-day.js'
+  import { createFormatter } from './lib/formatter.js'
+  import { createKeyboardHandler } from './lib/keyboard.js'
   import { contextKey, setup } from './lib/context'
-  import { keyCodes, keyCodesArray } from './lib/keyCodes'
   import { createEventDispatcher, setContext, getContext } from 'svelte'
+  import { checkIfVisibleDateIsSelectable, shakeDate } from './lib/feedback.js'
 
   const dispatch = createEventDispatcher()
   const today = new Date()
@@ -31,7 +32,15 @@
   const months = getMonths(start, end, selectableCallback, weekStart)
 
   setContext(contextKey, setup(months, today, selected, selectedEnd, start, end, config))
-  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView } = getContext(contextKey)
+  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView, shouldShakeDate } = getContext(contextKey)
+  const { formatter } = createFormatter(format, selectedDate, selectedEndDate, config.isRangePicker)
+
+  const keyboardHandler = createKeyboardHandler({
+    incrementDayHighlighted,
+    incrementMonth,
+    registerSelection: () => registerSelection(highlighted),
+    close
+  })
 
   export let style = ''
   export let buttonBackgroundColor = '#fff'
@@ -49,30 +58,11 @@
   const width = rangePicker ? null : 320
 
   let highlighted = today
-  let shouldShakeDate = false
-  let shakeHighlightTimeout
 
   let isOpen = false
   let isClosing = false
 
   today.setHours(0, 0, 0, 0)
-
-  // let monthIndex = 0
-  // let secMonthIndex = 0
-  // $: {
-  //   monthIndex = 0
-  //   secMonthIndex = 0
-  //   for (let i = 0; i < months.length; i += 1) {
-  //     if (months[i].month === $month && months[i].year === $year) {
-  //       monthIndex = i
-  //     }
-  //     if (config.isRangePicker && months[i].month === $secMonth && months[i].year === $secYear) {
-  //       secMonthIndex = i
-  //     }
-  //   }
-  // }
-  // $: visibleMonth = months[monthIndex]
-  // $: visibleSecMonth = months[secMonthIndex]
 
   $: visibleMonthsId = $year + $month / 100
   $: lastVisibleDate = $monthView.visibleMonth.weeks[$monthView.visibleMonth.weeks.length - 1].days[6].date
@@ -93,20 +83,6 @@
     --day-highlighted-text-color: ${dayHighlightedTextColor};
     ${style}
   `
-
-  export let formattedSelected
-  export let formattedSelectedEnd
-  export let formattedCombined
-  $: {
-    const isFn = typeof format === 'function'
-
-    formattedSelected = isFn ? format($selectedDate) : formatDate($selectedDate, format)
-    if (config.isRangePicker) {
-      formattedSelectedEnd = isFn ? format($selectedEndDate) : formatDate($selectedEndDate, format)
-    }
-
-    formattedCombined = rangePicker ? `${formattedSelected} - ${formattedSelectedEnd}` : formattedSelected
-  }
 
   function changeMonth (selectedMonth) {
     month.set(selectedMonth)
@@ -155,56 +131,13 @@
     }
   }
 
-  function checkIfVisibleDateIsSelectable (date) {
-    const proposedDay = getDay(
-      months,
-      date.getMonth(),
-      date.getDate(),
-      date.getFullYear()
-    )
-    return proposedDay && proposedDay.selectable
-  }
-
-  function shakeDate (date) {
-    clearTimeout(shakeHighlightTimeout)
-    shouldShakeDate = date
-    shakeHighlightTimeout = setTimeout(() => {
-      shouldShakeDate = false
-    }, 700)
-  }
-
   function assignValueToTrigger (formatted) {
     if (!trigger) { return }
     trigger.innerHTML = formatted
   }
 
-  function handleKeyPress (evt) {
-    if (keyCodesArray.indexOf(evt.keyCode) === -1) return false
-    evt.preventDefault()
-    switch (evt.keyCode) {
-      case keyCodes.left:
-        return incrementDayHighlighted(-1)
-      case keyCodes.up:
-        return incrementDayHighlighted(-7)
-      case keyCodes.right:
-        return incrementDayHighlighted(1)
-      case keyCodes.down:
-        return incrementDayHighlighted(7)
-      case keyCodes.pgup:
-        return incrementMonth(-1)
-      case keyCodes.pgdown:
-        return incrementMonth(1)
-      case keyCodes.escape:
-        return close()
-      case keyCodes.enter:
-        return registerSelection(highlighted)
-      default:
-        return false
-    }
-  }
-
   function registerClose () {
-    document.removeEventListener('keydown', handleKeyPress)
+    document.removeEventListener('keydown', keyboardHandler)
     dispatch('close')
   }
 
@@ -214,14 +147,14 @@
   }
 
   function registerSelection (chosen) {
-    if (!checkIfVisibleDateIsSelectable(chosen)) {
-      return shakeDate(chosen)
+    if (!checkIfVisibleDateIsSelectable(months, chosen)) {
+      return shakeDate(shouldShakeDate, chosen)
     }
 
     if (!config.isRangePicker) {
       selectedDate.set(chosen)
       dateChosen = true
-      assignValueToTrigger(formattedSelected)
+      assignValueToTrigger($formatter.formattedSelected)
       close()
       return dispatch('dateSelected', { date: $selectedDate })
     }
@@ -246,8 +179,8 @@
       dateChosenEnd = true
     }
   
-    assignValueToTrigger(formattedSelected)
-    assignValueToTrigger(formattedSelectedEnd)
+    assignValueToTrigger($formatter.formattedSelected)
+    assignValueToTrigger($formatter.formattedSelectedEnd)
   
     if (!firstDate) {
       dispatch('dateSelected', { from: $selectedDate, to: $selectedEndDate })
@@ -271,7 +204,7 @@
         secYear.set($selectedEndDate.getFullYear())
       }
     }
-    document.addEventListener('keydown', handleKeyPress)
+    document.addEventListener('keydown', keyboardHandler)
     dispatch('open')
   }
 </script>
@@ -335,10 +268,10 @@
     on:opened={registerOpen}
     on:closed={registerClose}>
     <div slot="trigger">
-      <slot>
+      <slot formatted={$formatter}>
         {#if !trigger}
           <button class="calendar-button" type="button">
-            {formattedCombined}
+            {$formatter.formattedCombined}
           </button>
         {/if}
       </slot>
@@ -358,7 +291,6 @@
           on:incrementSecMonth={e => incrementSecMonth(e.detail)} />
         <Months
           {highlighted}
-          {shouldShakeDate}
           id={visibleMonthsId}
           on:dateSelected={e => registerSelection(e.detail)} />
       </div>

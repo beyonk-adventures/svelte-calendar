@@ -6,7 +6,6 @@
 
   export let id
   export let highlighted
-  export let shouldShakeDate
 
   const { monthView, config } = getContext(contextKey)
 
@@ -31,8 +30,7 @@
     {#each $monthView.visibleMonth.weeks as week (week.id) }
       <Week 
         days={week.days}
-        {highlighted} 
-        {shouldShakeDate} 
+        {highlighted}
         {direction}
         on:dateSelected
       />
@@ -50,8 +48,7 @@
       {#each $monthView.visibleSecMonth.weeks as week (week.id) }
         <Week 
           days={week.days} 
-          {highlighted} 
-          {shouldShakeDate} 
+          {highlighted}
           {direction}
           on:dateSelected
         />

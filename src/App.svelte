@@ -12,7 +12,6 @@
 	const start = new Date()
 	const dateFormat = '#{l}, #{F} #{j}, #{Y}'
 	const noWeekendsSelectableCallback = (date) => date.getDay() !== 0 && date.getDay() !== 6
-	let formattedSelected
 	let dateChosen = false
 	let exampleFormatted = false
 	let exampleChosen = false
@@ -56,7 +55,6 @@ $: window.hljs && window.hljs.initHighlightingOnLoad()
 	<p>A lightweight date picker written with Svelte. Here is an example: </p>
 
 	<Datepicker format='{dateFormat}' />
-	<!-- <Datepicker ref:cal {start} {end} format='mm/dd/yyyy' /> -->
 
 	<p>This component can be used with or without the Svelte compiler.</p>
 	<ul>
@@ -73,17 +71,17 @@ $: window.hljs && window.hljs.initHighlightingOnLoad()
 
 	<h4>With Svelte:</h4>
 	<pre><code class='html'>
-&lt;Datepicker format={dateFormat} bind:formattedSelected bind:dateChosen&gt;
+&lt;Datepicker format={dateFormat} let:formatted bind:dateChosen&gt;
   &lt;button class='custom-button'&gt;
-    &#123;#if dateChosen} Chosen: &#123;formattedSelected} &#123;:else} Pick a date &#123;/if}
+    &#123;#if dateChosen} Chosen: &#123;formatted.formattedSelected} &#123;:else} Pick a date &#123;/if}
   &lt;/button&gt;
 &lt;/Datepicker&gt;
 	</code></pre>
 
 	<div class='text-center'>
-		<Datepicker format={dateFormat} bind:formattedSelected bind:dateChosen>
+		<Datepicker format={dateFormat} let:formatted bind:dateChosen>
 			<button class='custom-button'>
-				{#if dateChosen} Chosen: {formattedSelected} {:else} Pick a date {/if}
+				{#if dateChosen} Chosen: {formatted.formattedSelected} {:else} Pick a date {/if}
 			</button>
 		</Datepicker>
 	</div>
@@ -108,9 +106,9 @@ var cal = new SvelteCalendar(&#123;
 	</code></pre>
 
 	<div class='text-center'>
-		<Datepicker bind:formattedSelected={exampleFormatted} bind:dateChosen={exampleChosen}>
+		<Datepicker let:formatted bind:dateChosen={exampleChosen}>
 			<button id='test'>
-				{#if exampleChosen} {exampleFormatted} {:else}  Custom Button {/if}
+				{#if exampleChosen} {formatted.formattedSelected} {:else}  Custom Button {/if}
 			</button>
 		</Datepicker>
 	</div>

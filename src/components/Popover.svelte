@@ -1,6 +1,8 @@
 <script>
-  import { onMount, createEventDispatcher, tick } from 'svelte'
+  import { onMount, createEventDispatcher, tick, getContext } from 'svelte'
+  import { contextKey } from './lib/context.js'
 
+  const { isOpen, isClosing } = getContext(contextKey)
   const dispatch = createEventDispatcher()
 
   const once = (el, evt, cb) => {
@@ -19,20 +21,18 @@
   let translateY = 0
   let translateX = 0
 
-  export let open = false
-  export let shrink
   export let trigger
   export const close = () => {
-    shrink = true
+    isClosing.set(true)
     once(contentsAnimated, 'animationend', () => {
-      shrink = false
-      open = false
+      isClosing.set(false)
+      isOpen.set(false)
       dispatch('closed')
     })
   }
 
   function checkForFocusLoss (evt) {
-    if (!open) return
+    if (!$isOpen) return
     let el = evt.target
     // eslint-disable-next-line
     do {
@@ -54,7 +54,7 @@
   })
 
   const getDistanceToEdges = async () => {
-    if (!open) { open = true }
+    if (!$isOpen) { isOpen.set(true) }
     await tick()
     const rect = contentsWrapper.getBoundingClientRect()
     return {
@@ -93,7 +93,7 @@
 
     translateY = y
     translateX = x
-    open = true
+    isOpen.set(true)
 
     dispatch('opened')
   }
@@ -107,8 +107,8 @@
   </div>
   <div 
     class="contents-wrapper" 
-    class:visible={open}
-    class:shrink={shrink}
+    class:visible={$isOpen}
+    class:shrink={$isClosing}
     style="transform: translate(-50%,-50%) translate({translateX}px, {translateY}px)" 
     bind:this={contentsWrapper}>
     <div class="contents" bind:this={contentsAnimated}>

@@ -6,13 +6,12 @@
   import { contextKey } from './lib/context'
   import { getContext } from 'svelte'
 
-  const { config, selectedDate, selectedEndDate } = getContext(contextKey)
+  const { config, selectedDate, selectedEndDate, shouldShakeDate } = getContext(contextKey)
 
   const dispatch = createEventDispatcher()
 
   export let days
   export let highlighted
-  export let shouldShakeDate
   export let direction
 </script>
 
@@ -41,7 +40,7 @@
         <button 
           class="day--label" 
           class:highlighted={areDatesEquivalent(day.date, highlighted)}
-          class:shake-date={shouldShakeDate && areDatesEquivalent(day.date, shouldShakeDate)}
+          class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
           class:disabled={!day.selectable}
           type="button"
           on:click={() => dispatch('dateSelected', day.date)}
@@ -61,7 +60,7 @@
         <button 
           class="day--label" 
           class:highlighted={areDatesEquivalent(day.date, highlighted)}
-          class:shake-date={shouldShakeDate && areDatesEquivalent(day.date, shouldShakeDate)}
+          class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
           class:disabled={!day.selectable}
           type="button"
           on:click={() => dispatch('dateSelected', day.date)}

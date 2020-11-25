@@ -42,7 +42,10 @@ function setup (months, today, selected, selectedEnd, start, end, config) {
     selectedDate: writable(selectedDate),
     selectedEndDate: writable(selectedEnd),
     monthView,
-    config
+    config,
+    shouldShakeDate: writable(false),
+    isOpen: writable(false),
+    isClosing: writable(false)
   }
 }
 
