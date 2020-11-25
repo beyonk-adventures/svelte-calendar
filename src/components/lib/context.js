@@ -50,7 +50,8 @@ function setup (months, selected, selectedEnd, start, end, config) {
     shouldShakeDate: writable(false),
     isOpen: writable(false),
     isClosing: writable(false),
-    firstDate: writable(true)
+    firstDate: writable(true),
+    highlighted: writable(today)
   }
 }
 

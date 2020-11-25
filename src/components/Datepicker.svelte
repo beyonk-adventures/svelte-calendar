@@ -1,5 +1,5 @@
 <script>
-  import Months from './Month.svelte'
+  import Month from './Month.svelte'
   import NavBar from './NavBar.svelte'
   import Popover from './Popover.svelte'
   import { getMonths } from './lib/helpers'
@@ -33,19 +33,17 @@
   const months = getMonths(start, end, selectableCallback, weekStart)
 
   setContext(contextKey, setup(months, selected, selectedEnd, start, end, config))
-  const { today, month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView, shouldShakeDate, isOpen, isClosing, firstDate } = getContext(contextKey)
+  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView, shouldShakeDate, isOpen, isClosing, firstDate, highlighted } = getContext(contextKey)
   const { formatter } = createFormatter(format, selectedDate, selectedEndDate, config.isRangePicker)
 
   const keyboardHandler = createKeyboardHandler({
     incrementDayHighlighted,
     incrementMonth,
-    registerSelection: () => registerSelection(highlighted),
+    registerSelection: () => registerSelection($highlighted),
     close
   })
 
   let popover
-
-  let highlighted = today
 
   $: visibleMonthsId = $year + $month / 100
   $: lastVisibleDate = $monthView.visibleMonth.weeks[$monthView.visibleMonth.weeks.length - 1].days[6].date
@@ -55,15 +53,6 @@
   $: canIncrementSecMonth = $monthView.secMonthIndex < months.length - 1
   $: canDecrementSecMonth = $monthView.secMonthIndex > 0
 
-  function changeMonth (selectedMonth) {
-    month.set(selectedMonth)
-    highlighted = new Date($year, $month, 1)
-  }
-
-  function changeSecMonth (selectedMonth) {
-    secMonth.set(selectedMonth)
-  }
-
   function incrementMonth (direction, date = 1) {
     if (direction === 1 && !canIncrementMonth) return
     if (direction === -1 && !canDecrementMonth) return
@@ -71,7 +60,7 @@
     current.setMonth(current.getMonth() + direction)
     month.set(current.getMonth())
     year.set(current.getFullYear())
-    highlighted = new Date($year, $month, date)
+    highlighted.set(new Date($year, $month, date))
   }
 
   function incrementSecMonth (direction) {
@@ -84,21 +73,21 @@
   }
 
   function incrementDayHighlighted (amount) {
-    const proposedDate = new Date(highlighted)
-    proposedDate.setDate(highlighted.getDate() + amount)
+    const proposedDate = new Date($highlighted)
+    proposedDate.setDate($highlighted.getDate() + amount)
     const correspondingDayObj = getDay(
       months,
       proposedDate.getMonth(),
       proposedDate.getDate(),
       proposedDate.getFullYear()
     )
-    if (!correspondingDayObj || !correspondingDayObj.isInRange) return
-    highlighted = proposedDate
-    if (amount > 0 && highlighted > lastVisibleDate) {
-      incrementMonth(1, highlighted.getDate())
+    if (!correspondingDayObj || !correspondingDayObj.isInRange) { return }
+    highlighted.set(proposedDate)
+    if (amount > 0 && $highlighted > lastVisibleDate) {
+      incrementMonth(1, $highlighted.getDate())
     }
-    if (amount < 0 && highlighted < firstVisibleDate) {
-      incrementMonth(-1, highlighted.getDate())
+    if (amount < 0 && $highlighted < firstVisibleDate) {
+      incrementMonth(-1, $highlighted.getDate())
     }
   }
 
@@ -162,9 +151,9 @@
   }
 
   function registerOpen () {
-    highlighted = new Date($selectedDate)
-    month.set(highlighted.getMonth())
-    year.set(highlighted.getFullYear())
+    highlighted.set(new Date($selectedDate))
+    month.set($highlighted.getMonth())
+    year.set($highlighted.getFullYear())
 
     if (config.isRangePicker) {
       if ($selectedDate.getMonth() === $selectedEndDate.getMonth() && $selectedDate.getFullYear() === $selectedEndDate.getFullYear()) {
@@ -262,8 +251,7 @@
           on:monthSelected={e => changeSecMonth(e.detail)}
           on:incrementMonth={e => incrementMonth(e.detail)}
           on:incrementSecMonth={e => incrementSecMonth(e.detail)} />
-        <Months
-          {highlighted}
+        <Month
           id={visibleMonthsId}
           on:dateSelected={e => registerSelection(e.detail)} />
       </div>

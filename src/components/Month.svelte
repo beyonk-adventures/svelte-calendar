@@ -5,7 +5,6 @@
   import { sortedDaysOfWeek } from './lib/time'
 
   export let id
-  export let highlighted
 
   const { monthView, config } = getContext(contextKey)
 
@@ -30,7 +29,6 @@
     {#each $monthView.visibleMonth.weeks as week (week.id) }
       <Week 
         days={week.days}
-        {highlighted}
         {direction}
         on:dateSelected
       />
@@ -48,7 +46,6 @@
       {#each $monthView.visibleSecMonth.weeks as week (week.id) }
         <Week 
           days={week.days} 
-          {highlighted}
           {direction}
           on:dateSelected
         />
