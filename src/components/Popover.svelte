@@ -34,62 +34,25 @@
   function checkForFocusLoss (evt) {
     if (!$isOpen) return
     let el = evt.target
-    // eslint-disable-next-line
     do {
       if (el === popover) return
-      // eslint-disable-next-line
-    } while (el = el.parentNode);
+    } while (el = el.parentNode)
     close()
   }
 
   onMount(() => {
     document.addEventListener('click', checkForFocusLoss)
-    if (!trigger) return
+    if (!trigger) { return }
     triggerContainer.appendChild(trigger.parentNode.removeChild(trigger))
 
-    // eslint-disable-next-line
     return () => {
       document.removeEventListener('click', checkForFocusLoss)
     }
   })
 
-  const getDistanceToEdges = async () => {
-    if (!$isOpen) { isOpen.set(true) }
-    await tick()
-    const rect = contentsWrapper.getBoundingClientRect()
-    return {
-      top: rect.top + (-1 * translateY),
-      bottom: window.innerHeight - rect.bottom + translateY,
-      left: rect.left + (-1 * translateX),
-      right: document.body.clientWidth - rect.right + translateX
-    }
-  }
-
-  const getTranslate = async () => {
-    const dist = await getDistanceToEdges()
-    let x; let
-      y
-    if (w < 480) {
-      y = dist.bottom
-    } else if (dist.top < 0) {
-      y = Math.abs(dist.top)
-    } else if (dist.bottom < 0) {
-      y = dist.bottom
-    } else {
-      y = 0
-    }
-    if (dist.left < 0) {
-      x = Math.abs(dist.left)
-    } else if (dist.right < 0) {
-      x = dist.right
-    } else {
-      x = 0
-    }
-    return { x, y }
-  }
-
   const doOpen = async () => {
-    const { x, y } = await getTranslate()
+    if (!$isOpen) { isOpen.set(true) }
+    const { x, y } = await getTranslate(w, contentsWrapper, translateX, translateY)
 
     translateY = y
     translateX = x

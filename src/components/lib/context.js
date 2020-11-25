@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store'
+import { writable, derived, readable } from 'svelte/store'
 
 const contextKey = {}
 
@@ -25,7 +25,10 @@ function createMonthView (months, year, month, secYear, secMonth, isRangePicker)
   })
 }
 
-function setup (months, today, selected, selectedEnd, start, end, config) {
+function setup (months, selected, selectedEnd, start, end, config) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
   const selectedDate = (selected.getTime() < start.getTime() || selected.getTime() > end.getTime()) ? start : selected
   const year = writable(selectedDate.getFullYear())
   const month = writable(selectedDate.getMonth())
@@ -35,6 +38,7 @@ function setup (months, today, selected, selectedEnd, start, end, config) {
   const monthView = createMonthView(months, year, month, secYear, secMonth, config.isRangePicker)
 
   return {
+    today,
     month,
     secMonth,
     year,
@@ -45,7 +49,8 @@ function setup (months, today, selected, selectedEnd, start, end, config) {
     config,
     shouldShakeDate: writable(false),
     isOpen: writable(false),
-    isClosing: writable(false)
+    isClosing: writable(false),
+    firstDate: writable(true)
   }
 }
 

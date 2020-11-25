@@ -2,21 +2,19 @@
   <link rel="stylesheet" href="//unpkg.com/@highlightjs/cdn-assets@10.4.0/styles/default.min.css">
   <script src="//unpkg.com/@highlightjs/cdn-assets@10.4.0/highlight.min.js"></script>
 	<link href="https://fonts.googleapis.com/css?family=Rajdhani:400,700" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/rainbow.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/rainbow.min.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </svelte:head>
 
 <script>
-	import Datepicker from './main.js'
+	import { SvelteCalendar as Datepicker, CalendarStyle } from './main.js'
 
 	const today = new Date()
 	const start = new Date()
 	const dateFormat = '#{l}, #{F} #{j}, #{Y}'
 	const noWeekendsSelectableCallback = (date) => date.getDay() !== 0 && date.getDay() !== 6
 	let dateChosen = false
-	let exampleFormatted = false
 	let exampleChosen = false
-	
-	$: end = new Date(start.getTime() + 1000 * 3600 * 24 * 720)
 	
 	let threeDaysInPast
 	$: {
@@ -40,8 +38,7 @@
 	}
 
 	function logChoice (date1, date2) {
-	  // eslint-disable-next-line
-		console.log(`Selected date ${date1}.`);
+		console.log(`Selected date ${date1}.`)
 	  if (date2) {
 	    console.log(`Selected end date ${date2}.`)
 	  }
@@ -142,26 +139,30 @@ var cal = new SvelteCalendar(&#123;
 	<p>You can theme the datepicker:</p>
 	<div>
 		<Datepicker 
-			format={dateFormat}
-			buttonBackgroundColor='#e20074'
-			buttonTextColor='white'
-			highlightColor='#e20074'
-			dayBackgroundColor='#efefef'
-			dayTextColor='#333'
-			dayHighlightedBackgroundColor='#e20074'
-			dayHighlightedTextColor='#fff'
+      format={dateFormat}
+      styling={new CalendarStyle({
+        buttonBackgroundColor: '#e20074',
+        buttonTextColor: 'white',
+        highlightColor: '#e20074',
+        dayBackgroundColor: '#efefef',
+        dayTextColor: '#333',
+        dayHighlightedBackgroundColor: '#e20074',
+        dayHighlightedTextColor: '#fff'
+      })}
 		/>
 	</div>
 	<pre><code class="html">
 &lt;Datepicker 
   format={dateFormat} 
-  buttonBackgroundColor='#e20074'
-  buttonTextColor='white'
-  highlightColor='#e20074'
-  dayBackgroundColor='#efefef'
-  dayTextColor='#333'
-  dayHighlightedBackgroundColor='#e20074'
-  dayHighlightedTextColor='#fff'
+  styling={new CalendarStyle({
+    buttonBackgroundColor: '#e20074',
+    buttonTextColor: 'white',
+    highlightColor: '#e20074',
+    dayBackgroundColor: '#efefef',
+    dayTextColor: '#333',
+    dayHighlightedBackgroundColor: '#e20074',
+    dayHighlightedTextColor: '#fff'
+  })}
 /&gt;
 	</code></pre>
 
@@ -203,4 +204,7 @@ var cal = new SvelteCalendar(&#123;
 	.note {
 		color: tomato;
 	}
+  pre {
+    overflow-x: scroll;
+  }
 </style>

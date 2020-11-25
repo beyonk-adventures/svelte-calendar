@@ -9,21 +9,22 @@
   import { contextKey, setup } from './lib/context'
   import { createEventDispatcher, setContext, getContext } from 'svelte'
   import { checkIfVisibleDateIsSelectable, shakeDate } from './lib/feedback.js'
-
-  const dispatch = createEventDispatcher()
-  const today = new Date()
+  import { CalendarStyle } from '../calendar-style.js'
 
   export let rangePicker = false
   export let format = '#{m} / #{d} / #{Y}'
-  export let start = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
+  export let start = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
   export let end = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate())
-  export let selected = today
-  export let selectedEnd = rangePicker ? today : null
   export let dateChosen = false
   export let dateChosenEnd = false
   export let trigger = null
   export let selectableCallback = null
   export let weekStart = 0
+  export let styling = new CalendarStyle()
+  export let selected = new Date()
+  export let selectedEnd = rangePicker ? new Date() : null
+
+  const dispatch = createEventDispatcher()
 
   const config = {
     isRangePicker: rangePicker
@@ -31,8 +32,8 @@
 
   const months = getMonths(start, end, selectableCallback, weekStart)
 
-  setContext(contextKey, setup(months, today, selected, selectedEnd, start, end, config))
-  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView, shouldShakeDate } = getContext(contextKey)
+  setContext(contextKey, setup(months, selected, selectedEnd, start, end, config))
+  const { today, month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView, shouldShakeDate, isOpen, isClosing, firstDate } = getContext(contextKey)
   const { formatter } = createFormatter(format, selectedDate, selectedEndDate, config.isRangePicker)
 
   const keyboardHandler = createKeyboardHandler({
@@ -42,27 +43,9 @@
     close
   })
 
-  export let style = ''
-  export let buttonBackgroundColor = '#fff'
-  export let buttonBorderColor = '#eee'
-  export let buttonTextColor = '#333'
-  export let highlightColor = '#f7901e'
-  export let passiveHighlightColor = '#FCD9B1'
-  export let dayBackgroundColor = 'none'
-  export let dayTextColor = '#4a4a4a'
-  export let dayHighlightedBackgroundColor = '#efefef'
-  export let dayHighlightedTextColor = '#4a4a4a'
-
   let popover
-  let firstDate = true
-  const width = rangePicker ? null : 320
 
   let highlighted = today
-
-  let isOpen = false
-  let isClosing = false
-
-  today.setHours(0, 0, 0, 0)
 
   $: visibleMonthsId = $year + $month / 100
   $: lastVisibleDate = $monthView.visibleMonth.weeks[$monthView.visibleMonth.weeks.length - 1].days[6].date
@@ -71,18 +54,6 @@
   $: canDecrementMonth = $monthView.monthIndex > 0
   $: canIncrementSecMonth = $monthView.secMonthIndex < months.length - 1
   $: canDecrementSecMonth = $monthView.secMonthIndex > 0
-  $: wrapperStyle = `
-    --button-background-color: ${buttonBackgroundColor};
-    --button-border-color: ${buttonBorderColor};
-    --button-text-color: ${buttonTextColor};
-    --highlight-color: ${highlightColor};
-    --passive-highlight-color: ${passiveHighlightColor};
-    --day-background-color: ${dayBackgroundColor};
-    --day-text-color: ${dayTextColor};
-    --day-highlighted-background-color: ${dayHighlightedBackgroundColor};
-    --day-highlighted-text-color: ${dayHighlightedTextColor};
-    ${style}
-  `
 
   function changeMonth (selectedMonth) {
     month.set(selectedMonth)
@@ -159,7 +130,7 @@
       return dispatch('dateSelected', { date: $selectedDate })
     }
 
-    if (firstDate) {
+    if ($firstDate) {
       if (dateChosen) {
         selectedEndDate.set(chosen)
       }
@@ -182,11 +153,11 @@
     assignValueToTrigger($formatter.formattedSelected)
     assignValueToTrigger($formatter.formattedSelectedEnd)
   
-    if (!firstDate) {
+    if (!$firstDate) {
       dispatch('dateSelected', { from: $selectedDate, to: $selectedEndDate })
     }
 
-    firstDate = !firstDate
+    firstDate.update(v => !v)
     return true
   }
 
@@ -249,22 +220,24 @@
   @media (min-width: 600px) {
     .calendar {
       height: auto;
-      width: 680px;
+      width: 320px;
       max-width: 100%;
+    }
+
+    .calendar.is-range-picker {
+      width: 680px;
     }
   }
 </style>
 
 <div
   class="datepicker"
-  class:open={isOpen}
-  class:closing={isClosing}
-  style={wrapperStyle}>
+  class:open={$isOpen}
+  class:closing={$isClosing}
+  style={styling.toWrapperStyle()}>
   <Popover
     {trigger}
     bind:this={popover}
-    bind:open={isOpen}
-    bind:shrink={isClosing}
     on:opened={registerOpen}
     on:closed={registerClose}>
     <div slot="trigger">
@@ -277,7 +250,7 @@
       </slot>
     </div>
     <div slot="contents">
-      <div class="calendar" style="width: {width}px">
+      <div class="calendar" class:is-range-picker={config.isRangePicker}>
         <NavBar
           {start}
           {end}
