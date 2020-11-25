@@ -1,4 +1,5 @@
 import { writable, derived, readable } from 'svelte/store'
+import { createFormatter } from './formatter.js'
 
 const contextKey = {}
 
@@ -29,29 +30,37 @@ function setup (months, selected, selectedEnd, start, end, config) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const selectedDate = (selected.getTime() < start.getTime() || selected.getTime() > end.getTime()) ? start : selected
-  const year = writable(selectedDate.getFullYear())
-  const month = writable(selectedDate.getMonth())
+  const givenDate = (selected.getTime() < start.getTime() || selected.getTime() > end.getTime()) ? start : selected
+  const year = writable(givenDate.getFullYear())
+  const month = writable(givenDate.getMonth())
   const secMonth = writable(today.getMonth())
   const secYear = writable(today.getFullYear())
+  const selectedDate = writable(givenDate)
+  const selectedEndDate = writable(selectedEnd)
 
   const monthView = createMonthView(months, year, month, secYear, secMonth, config.isRangePicker)
+  const { formatter } = createFormatter(config.format, selectedDate, selectedEndDate, config.isRangePicker)
 
   return {
+    start: readable(start),
+    end: readable(end),
+    months,
     today,
     month,
     secMonth,
     year,
     secYear,
-    selectedDate: writable(selectedDate),
-    selectedEndDate: writable(selectedEnd),
+    selectedDate,
+    selectedEndDate,
     monthView,
     config,
     shouldShakeDate: writable(false),
     isOpen: writable(false),
     isClosing: writable(false),
     firstDate: writable(true),
-    highlighted: writable(today)
+    highlighted: writable(today),
+    formatter,
+    isDateChosen: writable(false)
   }
 }
 

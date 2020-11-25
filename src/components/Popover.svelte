@@ -1,6 +1,7 @@
 <script>
-  import { onMount, createEventDispatcher, tick, getContext } from 'svelte'
+  import { onMount, createEventDispatcher, getContext } from 'svelte'
   import { contextKey } from './lib/context.js'
+  import { getTranslate } from './lib/positioning.js'
 
   const { isOpen, isClosing } = getContext(contextKey)
   const dispatch = createEventDispatcher()

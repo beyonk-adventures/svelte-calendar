@@ -3,11 +3,9 @@
   import { contextKey } from './lib/context'
   import { monthsOfYear } from './lib/time'
 
-  const { config, month, secMonth, year, secYear } = getContext(contextKey)
+  const { start, end, config, month, secMonth, year, secYear } = getContext(contextKey)
   const dispatch = createEventDispatcher()
 
-  export let start
-  export let end
   export let canIncrementMonth
   export let canDecrementMonth
   export let canIncrementSecMonth
@@ -17,8 +15,8 @@
   let availableMonths
 
   $: {
-    const isOnLowerBoundary = start.getFullYear() === ($year || $secYear)
-    const isOnUpperBoundary = end.getFullYear() === ($year || $secYear)
+    const isOnLowerBoundary = $start.getFullYear() === ($year || $secYear)
+    const isOnUpperBoundary = $end.getFullYear() === ($year || $secYear)
     availableMonths = monthsOfYear.map((m, i) => {
       return Object.assign({}, {
         name: m[0],
@@ -27,8 +25,8 @@
         selectable:
           (!isOnLowerBoundary && !isOnUpperBoundary) ||
         (
-          (!isOnLowerBoundary || i >= start.getMonth()) &&
-          (!isOnUpperBoundary || i <= end.getMonth())
+          (!isOnLowerBoundary || i >= $start.getMonth()) &&
+          (!isOnUpperBoundary || i <= $end.getMonth())
         )
       })
     })
