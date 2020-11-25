@@ -28,8 +28,10 @@
     isRangePicker: rangePicker
   }
 
-  setContext(contextKey, setup(today, selected, start, end, config))
-  const { month, year, secMonth, secYear, selectedDate } = getContext(contextKey)
+  const months = getMonths(start, end, selectableCallback, weekStart)
+
+  setContext(contextKey, setup(months, today, selected, selectedEnd, start, end, config))
+  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, monthView } = getContext(contextKey)
 
   export let style = ''
   export let buttonBackgroundColor = '#fff'
@@ -55,32 +57,30 @@
 
   today.setHours(0, 0, 0, 0)
 
-  $: months = getMonths(start, end, selectableCallback, weekStart)
-
-  let monthIndex = 0
-  let secMonthIndex = 0
-  $: {
-    monthIndex = 0
-    secMonthIndex = 0
-    for (let i = 0; i < months.length; i += 1) {
-      if (months[i].month === $month && months[i].year === $year) {
-        monthIndex = i
-      }
-      if (config.isRangePicker && months[i].month === $secMonth && months[i].year === $secYear) {
-        secMonthIndex = i
-      }
-    }
-  }
-  $: visibleMonth = months[monthIndex]
-  $: visibleSecMonth = months[secMonthIndex]
+  // let monthIndex = 0
+  // let secMonthIndex = 0
+  // $: {
+  //   monthIndex = 0
+  //   secMonthIndex = 0
+  //   for (let i = 0; i < months.length; i += 1) {
+  //     if (months[i].month === $month && months[i].year === $year) {
+  //       monthIndex = i
+  //     }
+  //     if (config.isRangePicker && months[i].month === $secMonth && months[i].year === $secYear) {
+  //       secMonthIndex = i
+  //     }
+  //   }
+  // }
+  // $: visibleMonth = months[monthIndex]
+  // $: visibleSecMonth = months[secMonthIndex]
 
   $: visibleMonthsId = $year + $month / 100
-  $: lastVisibleDate = visibleMonth.weeks[visibleMonth.weeks.length - 1].days[6].date
-  $: firstVisibleDate = visibleMonth.weeks[0].days[0].date
-  $: canIncrementMonth = monthIndex < months.length - 1
-  $: canDecrementMonth = monthIndex > 0
-  $: canIncrementSecMonth = secMonthIndex < months.length - 1
-  $: canDecrementSecMonth = secMonthIndex > 0
+  $: lastVisibleDate = $monthView.visibleMonth.weeks[$monthView.visibleMonth.weeks.length - 1].days[6].date
+  $: firstVisibleDate = $monthView.visibleMonth.weeks[0].days[0].date
+  $: canIncrementMonth = $monthView.monthIndex < months.length - 1
+  $: canDecrementMonth = $monthView.monthIndex > 0
+  $: canIncrementSecMonth = $monthView.secMonthIndex < months.length - 1
+  $: canDecrementSecMonth = $monthView.secMonthIndex > 0
   $: wrapperStyle = `
     --button-background-color: ${buttonBackgroundColor};
     --button-border-color: ${buttonBorderColor};
@@ -102,7 +102,7 @@
 
     formattedSelected = isFn ? format($selectedDate) : formatDate($selectedDate, format)
     if (config.isRangePicker) {
-      formattedSelectedEnd = isFn ? format(selectedEnd) : formatDate(selectedEnd, format)
+      formattedSelectedEnd = isFn ? format($selectedEndDate) : formatDate($selectedEndDate, format)
     }
 
     formattedCombined = rangePicker ? `${formattedSelected} - ${formattedSelectedEnd}` : formattedSelected
@@ -228,19 +228,19 @@
 
     if (firstDate) {
       if (dateChosen) {
-        selectedEnd = chosen
+        selectedEndDate.set(chosen)
       }
       if (chosen <= selectedEnd || !dateChosen) {
-        selected = chosen
-        selectedEnd = selected
+        selectedDate.set(chosen)
+        selectedEndDate.set(selected)
       }
       dateChosen = true
     } else {
-      if (chosen >= selected) {
-        selectedEnd = chosen
+      if (chosen >= $selectedDate) {
+        selectedEndDate.set(chosen)
       } else {
-        selectedEnd = selected
-        selected = chosen
+        selectedEndDate.set(selected)
+        selectedDate.set(chosen)
       }
       close()
       dateChosenEnd = true
@@ -250,7 +250,7 @@
     assignValueToTrigger(formattedSelectedEnd)
   
     if (!firstDate) {
-      dispatch('dateSelected', { from: $selectedDate, to: selectedEnd })
+      dispatch('dateSelected', { from: $selectedDate, to: $selectedEndDate })
     }
 
     firstDate = !firstDate
@@ -263,12 +263,12 @@
     year.set(highlighted.getFullYear())
 
     if (config.isRangePicker) {
-      if ($selectedDate.getMonth() === selectedEnd.getMonth() && $selectedDate.getFullYear() === selectedEnd.getFullYear()) {
+      if ($selectedDate.getMonth() === $selectedEndDate.getMonth() && $selectedDate.getFullYear() === $selectedEndDate.getFullYear()) {
         secMonth.set($selectedDate.getMonth() + 1)
         secYear.set($selectedDate.getFullYear())
       } else {
-        secMonth.set(selectedEnd.getMonth())
-        secYear.set(selectedEnd.getFullYear())
+        secMonth.set($selectedEndDate.getMonth())
+        secYear.set($selectedEndDate.getFullYear())
       }
     }
     document.addEventListener('keydown', handleKeyPress)
@@ -357,9 +357,6 @@
           on:incrementMonth={e => incrementMonth(e.detail)}
           on:incrementSecMonth={e => incrementSecMonth(e.detail)} />
         <Months
-          {visibleMonth}
-          {visibleSecMonth}
-          {selectedEnd}
           {highlighted}
           {shouldShakeDate}
           id={visibleMonthsId}

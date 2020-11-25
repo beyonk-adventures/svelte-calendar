@@ -5,13 +5,10 @@
   import { sortedDaysOfWeek } from './lib/time'
 
   export let id
-  export let visibleMonth
-  export let visibleSecMonth
-  export let selectedEnd
   export let highlighted
   export let shouldShakeDate
 
-  const { config } = getContext(contextKey)
+  const { monthView, config } = getContext(contextKey)
 
   let lastId = id
   let direction
@@ -31,10 +28,9 @@
       {/each}
     </div>
   </div>
-    {#each visibleMonth.weeks as week (week.id) }
+    {#each $monthView.visibleMonth.weeks as week (week.id) }
       <Week 
-        days={week.days} 
-        {selectedEnd}  
+        days={week.days}
         {highlighted} 
         {shouldShakeDate} 
         {direction}
@@ -51,10 +47,9 @@
         {/each}
       </div>
     </div>
-      {#each visibleSecMonth.weeks as week (week.id) }
+      {#each $monthView.visibleSecMonth.weeks as week (week.id) }
         <Week 
           days={week.days} 
-          {selectedEnd}  
           {highlighted} 
           {shouldShakeDate} 
           {direction}

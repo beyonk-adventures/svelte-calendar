@@ -6,12 +6,11 @@
   import { contextKey } from './lib/context'
   import { getContext } from 'svelte'
 
-  const { config, selectedDate } = getContext(contextKey)
+  const { config, selectedDate, selectedEndDate } = getContext(contextKey)
 
   const dispatch = createEventDispatcher()
 
   export let days
-  export let selectedEnd
   export let highlighted
   export let shouldShakeDate
   export let direction
@@ -22,7 +21,7 @@
   in:fly|local={{ x: direction * 50, duration: 180, delay: 90 }}
 >
   {#each days as day}
-    {#if selectedEnd}
+    {#if $selectedEndDate}
       <div 
         class="day"
         class:is-range-picker={config.isRangePicker}
@@ -30,12 +29,12 @@
         class:first-of-month={day.firstOfMonth}
         class:last-of-month={day.lastOfMonth}
         class:selected={areDatesEquivalent(day.date, $selectedDate)}
-        class:selectedEnd={areDatesEquivalent(day.date, selectedEnd)}
-        class:betweenSelected={isDateBetweenSelected($selectedDate, selectedEnd, day.date)}
+        class:selectedEnd={areDatesEquivalent(day.date, $selectedEndDate)}
+        class:betweenSelected={isDateBetweenSelected($selectedDate, $selectedEndDate, day.date)}
         class:is-today={
           day.isToday &&
-          $selectedDate === selectedEnd &&
-          !isDateBetweenSelected($selectedDate, selectedEnd, day.date)
+          $selectedDate === $selectedEndDate &&
+          !isDateBetweenSelected($selectedDate, $selectedEndDate, day.date)
         }
         class:is-disabled={!day.selectable}
       >
