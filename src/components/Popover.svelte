@@ -3,7 +3,7 @@
   import { contextKey } from './lib/context.js'
   import { getTranslate } from './lib/positioning.js'
 
-  const { isOpen, isClosing } = getContext(contextKey)
+  const { isOpen, isClosing, config } = getContext(contextKey)
   const dispatch = createEventDispatcher()
 
   const once = (el, evt, cb) => {
@@ -42,12 +42,12 @@
   }
 
   onMount(() => {
-    document.addEventListener('click', checkForFocusLoss)
+    config.closeOnFocusLoss && document.addEventListener('click', checkForFocusLoss)
     if (!trigger) { return }
     triggerContainer.appendChild(trigger.parentNode.removeChild(trigger))
 
     return () => {
-      document.removeEventListener('click', checkForFocusLoss)
+      config.closeOnFocusLoss && document.removeEventListener('click', checkForFocusLoss)
     }
   })
 

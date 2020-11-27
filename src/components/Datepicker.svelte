@@ -5,7 +5,7 @@
   import { createEventDispatcher, setContext, getContext } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
   import DateView from './DateView.svelte'
-  import TimeView from './TimeView.svelte'
+  import TimeView from './time-view/TimeView.svelte'
 
   export let rangePicker = false
   export let placeholder = 'Choose Date'
@@ -19,18 +19,24 @@
   export let styling = new CalendarStyle()
   export let selected = new Date()
   export let selectedEnd = rangePicker ? new Date() : null
+  export let closeOnFocusLoss = true
+  export let morning = 7
+  export let night = 19
 
   const dispatch = createEventDispatcher()
 
   const config = {
     isRangePicker: rangePicker,
-    format
+    closeOnFocusLoss,
+    format,
+    morning,
+    night
   }
 
   const months = getMonths(start, end, selectableCallback, weekStart)
 
   setContext(contextKey, setup(months, selected, selectedEnd, start, end, config))
-  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen } = getContext(contextKey)
+  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen, isDaytime } = getContext(contextKey)
 
   $: dateChosen = $isDateChosen
 
@@ -98,6 +104,15 @@
     width: 100vw;
     padding: 10px;
     padding-top: 0;
+    transition: background 0.15s ease;
+  }
+
+  .calendar.day {
+    background-color: white;
+  }
+
+  .calendar.night {
+		background-color: #0DAD83;
   }
   
   @media (min-width: 600px) {
@@ -137,7 +152,7 @@
       </slot>
     </div>
     <div slot="contents">
-      <div class="calendar" class:is-range-picker={config.isRangePicker}>
+      <div class="calendar" class:day={$isDaytime} class:night={!$isDaytime} class:is-range-picker={config.isRangePicker}>
         <svelte:component this={TimeView} on:close={close} />
       </div>
     </div>

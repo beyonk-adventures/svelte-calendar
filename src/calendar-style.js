@@ -12,6 +12,9 @@ class CalendarStyle {
     this.dayTextColor = '#4a4a4a'
     this.dayHighlightedBackgroundColor = '#efefef'
     this.dayHighlightedTextColor = '#4a4a4a'
+    this.nightModeBackgroundColor = '#0DAD83'
+    this.timeConfirmButtonColor = '#2196F3'
+    this.timeConfirmButtonTextColor = '#fff'
 
     Object.entries(overrides).forEach(([ prop, value ]) => {
       this[prop] = value
@@ -29,6 +32,9 @@ class CalendarStyle {
       --day-text-color: ${this.dayTextColor};
       --day-highlighted-background-color: ${this.dayHighlightedBackgroundColor};
       --day-highlighted-text-color: ${this.dayHighlightedTextColor};
+      --night-mode-background-color: ${this.nightModeBackgroundColor};
+      --time-confirm-button-text-color: ${this.timeConfirmButtonTextColor};
+      --time-confirm-button-color: ${this.timeConfirmButtonColor};
       ${this.style}
     `
   }
