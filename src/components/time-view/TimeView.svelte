@@ -1,12 +1,18 @@
 <script>
+  import dayjs from 'dayjs/esm'
   import TimeInput from './TimeInput.svelte'
-  import { getContext } from 'svelte'
+  import { getContext, createEventDispatcher } from 'svelte'
   import { contextKey } from '../lib/context.js'
 
-  const { selectedDate } = getContext(contextKey)
+  const dispatch = createEventDispatcher()
+  const { selectedDate, time } = getContext(contextKey)
 
   function confirmTime () {
-    
+    const [ h, m ] = $time.split(':').map(parseInt)
+    selectedDate.set(
+      dayjs(selectedDate).hour(h).minute(m).toDate()
+    )
+    dispatch('close')
   }
 </script>
 

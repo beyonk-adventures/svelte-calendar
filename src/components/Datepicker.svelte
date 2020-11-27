@@ -9,7 +9,7 @@
 
   export let rangePicker = false
   export let placeholder = 'Choose Date'
-  export let format = '#{m} / #{d} / #{Y}'
+  export let format = 'DD / MM / YYYY'
   export let start = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
   export let end = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate())
   export let dateChosen = false
@@ -20,6 +20,7 @@
   export let selected = new Date()
   export let selectedEnd = rangePicker ? new Date() : null
   export let closeOnFocusLoss = true
+  export let includeTime = false
   export let morning = 7
   export let night = 19
 
@@ -30,7 +31,8 @@
     closeOnFocusLoss,
     format,
     morning,
-    night
+    night,
+    includeTime
   }
 
   const months = getMonths(start, end, selectableCallback, weekStart)
@@ -153,7 +155,7 @@
     </div>
     <div slot="contents">
       <div class="calendar" class:day={$isDaytime} class:night={!$isDaytime} class:is-range-picker={config.isRangePicker}>
-        <svelte:component this={TimeView} on:close={close} />
+        <svelte:component this={DateView} on:close={close} />
       </div>
     </div>
   </Popover>
