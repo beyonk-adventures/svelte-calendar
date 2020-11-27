@@ -7,11 +7,11 @@
 </svelte:head>
 
 <script>
-	import { SvelteCalendar as Datepicker, CalendarStyle } from './main.js'
+	import { SvelteCalendar as DatePicker, CalendarStyle } from './main.js'
 
 	const today = new Date()
 	const start = new Date()
-	const dateFormat = '#{l}, #{F} #{j}, #{Y}'
+	const dateFormat = 'ddd, DD MMM, YYYY'
 	const noWeekendsSelectableCallback = (date) => date.getDay() !== 0 && date.getDay() !== 6
 	let dateChosen = false
 	let exampleChosen = false
@@ -49,9 +49,13 @@ $: window.hljs && window.hljs.initHighlightingOnLoad()
 
 <h1>SvelteCalendar</h1>
 <div class='container'>
+  <p>With a timepicker: </p>
+
+	<DatePicker format='ddd, DD MMM YYYY, HH:mm' includeTime={true} />
+
 	<p>A lightweight date picker written with Svelte. Here is an example: </p>
 
-	<Datepicker format='{dateFormat}' />
+	<DatePicker format='{dateFormat}' />
 
 	<p>This component can be used with or without the Svelte compiler.</p>
 	<ul>
@@ -68,19 +72,19 @@ $: window.hljs && window.hljs.initHighlightingOnLoad()
 
 	<h4>With Svelte:</h4>
 	<pre><code class='html'>
-&lt;Datepicker format={dateFormat} let:formatted bind:dateChosen&gt;
+&lt;DatePicker format={dateFormat} let:formatted bind:dateChosen&gt;
   &lt;button class='custom-button'&gt;
     &#123;#if dateChosen} Chosen: &#123;formatted.formattedSelected} &#123;:else} Pick a date &#123;/if}
   &lt;/button&gt;
-&lt;/Datepicker&gt;
+&lt;/DatePicker&gt;
 	</code></pre>
 
 	<div class='text-center'>
-		<Datepicker format={dateFormat} let:formatted bind:dateChosen>
+		<DatePicker format='ddd, DD MMM YYYY, HH:mm' let:formatted bind:dateChosen>
 			<button class='custom-button'>
 				{#if dateChosen} Chosen: {formatted.formattedSelected} {:else} Pick a date {/if}
 			</button>
-		</Datepicker>
+		</DatePicker>
 	</div>
 
 	<h4>Without Svelte HTML:</h4>
@@ -103,17 +107,17 @@ var cal = new SvelteCalendar(&#123;
 	</code></pre>
 
 	<div class='text-center'>
-		<Datepicker let:formatted bind:dateChosen={exampleChosen}>
+		<DatePicker let:formatted bind:dateChosen={exampleChosen}>
 			<button id='test'>
 				{#if exampleChosen} {formatted.formattedSelected} {:else}  Custom Button {/if}
 			</button>
-		</Datepicker>
+		</DatePicker>
 	</div>
 
 	<p>You can confine the date selection range with start and end:</p>
 
 	<div class='text-center'>
-		<Datepicker format={dateFormat} start={threeDaysInPast} end={inThirtyDays} selectableCallback={noWeekendsSelectableCallback} />
+		<DatePicker format={dateFormat} start={threeDaysInPast} end={inThirtyDays} selectableCallback={noWeekendsSelectableCallback} />
 	</div>
 
 	<p class='note'>Note: The calendar will only generate dates up until the end date, so it is recommended to set this value to whatever is useful for you.</p>
@@ -121,24 +125,24 @@ var cal = new SvelteCalendar(&#123;
 	<p>You can also provide a `selectableCallback` prop which can be used to mark individual days between `start` and `end` as selectable.  This callback should accept a single date as an argument and return true (if selectable) or false (if unavailable).</p>
 
 	<div class='text-center'>
-		<Datepicker format={dateFormat} start={tomorrow} end={inThirtyDays} selectableCallback={noWeekendsSelectableCallback} />
+		<DatePicker format={dateFormat} start={tomorrow} end={inThirtyDays} selectableCallback={noWeekendsSelectableCallback} />
 	</div>
 
 	<p>You can bind to the `dateSelected` event, which has a data property `date`:</p>
 	
 	<div class='text-center'>
-		<Datepicker format={dateFormat} on:dateSelected={e => logChoice(e.detail.date)} />
+		<DatePicker format={dateFormat} on:dateSelected={e => logChoice(e.detail.date)} />
 	</div>
 
 	<p>If it's a range picker, it has from and to:</p>
 	
 	<div class='text-center'>
-		<Datepicker rangePicker={true} format={dateFormat} on:dateSelected={e => logChoice(e.detail.from, e.detail.to)} />
+		<DatePicker rangePicker={true} format={dateFormat} on:dateSelected={e => logChoice(e.detail.from, e.detail.to)} />
 	</div>
 
 	<p>You can theme the datepicker:</p>
 	<div>
-		<Datepicker 
+		<DatePicker 
       format={dateFormat}
       styling={new CalendarStyle({
         buttonBackgroundColor: '#e20074',
@@ -152,7 +156,7 @@ var cal = new SvelteCalendar(&#123;
 		/>
 	</div>
 	<pre><code class="html">
-&lt;Datepicker 
+&lt;DatePicker 
   format={dateFormat} 
   styling={new CalendarStyle({
     buttonBackgroundColor: '#e20074',
@@ -169,7 +173,7 @@ var cal = new SvelteCalendar(&#123;
   <p>You can turn the DatePicker into a RangePicker:</p>
 
 	<div class='text-center'>
-		<Datepicker format={dateFormat} rangePicker={true} />
+		<DatePicker format={dateFormat} rangePicker={true} />
 	</div>
 
 </div>

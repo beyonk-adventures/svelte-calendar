@@ -1,4 +1,5 @@
-import { derived } from 'svelte/store'
+import { writable } from 'svelte/store'
+import dayjs from 'dayjs/esm'
 
 function format (h, m) {
   return [
@@ -7,7 +8,9 @@ function format (h, m) {
   ].join(':')
 }
 
-function createStore (time, morning, night) {
+function createStore (date) {
+  const time = writable(dayjs(date).format('HH:mm'))
+
   function increment (segment) {
     time.update(t => {
       let [ h, m ] = t.split(':')
@@ -29,19 +32,11 @@ function createStore (time, morning, night) {
   function set (t) {
     time.set(t)
   }
-
-  const daytime = derived(time, $time => {
-    if (!$time) { return true }
-    const [ h ] = $time.split(':').map(parseInt)
-    return h > morning && h < night
-  })
-
   return {
     increment,
     decrement,
     time,
-    set,
-    daytime
+    set
   }
 }
 

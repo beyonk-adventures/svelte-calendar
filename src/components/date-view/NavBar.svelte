@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher, getContext } from 'svelte'
-  import { contextKey } from './lib/context'
-  import { monthsOfYear } from './lib/time'
+  import { contextKey } from '../lib/context'
+  import { monthsOfYear } from '../lib/time'
 
   const { start, end, config, month, secMonth, year, secYear } = getContext(contextKey)
   const dispatch = createEventDispatcher()

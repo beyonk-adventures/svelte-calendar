@@ -1,25 +1,24 @@
-<NavBar
-  {canIncrementMonth}
-  {canDecrementMonth}
-  {canIncrementSecMonth}
-  {canDecrementSecMonth}
-  on:monthSelected={e => changeMonth(e.detail)}
-  on:monthSelected={e => changeSecMonth(e.detail)}
-  on:incrementMonth={e => incrementMonth(e.detail)}
-  on:incrementSecMonth={e => incrementSecMonth(e.detail)} />
-<Month
-  id={visibleMonthsId}
-  on:dateSelected={e => registerSelection(e.detail)} />
+<div out:fade|local>
+  <NavBar
+    {canIncrementMonth}
+    {canDecrementMonth}
+    on:monthSelected={e => changeMonth(e.detail)}
+    on:incrementMonth={e => incrementMonth(e.detail)} />
+  <Month
+    id={visibleMonthsId}
+    on:chosen={e => registerSelection(e.detail.date)} />
+</div>
 
 <script>
   import Month from './Month.svelte'
   import NavBar from './NavBar.svelte'
-  import { checkIfVisibleDateIsSelectable, shakeDate } from './lib/feedback.js'
-  import { contextKey } from './lib/context.js'
-  import { createKeyboardHandler } from './lib/keyboard.js'
+  import { checkIfVisibleDateIsSelectable, shakeDate } from '../lib/feedback.js'
+  import { contextKey } from '../lib/context.js'
+  import { createKeyboardHandler } from '../lib/keyboard.js'
   import { getContext, createEventDispatcher, onMount } from 'svelte'
+  import { fade } from 'svelte/transition'
 
-  const { months, monthView, year, month, secYear, secMonth, config, highlighted, shouldShakeDate, firstDate, selectedDate, selectedEndDate, formatter, isDateChosen } = getContext(contextKey)
+  const { months, monthView, year, month, highlighted, shouldShakeDate } = getContext(contextKey)
   const dispatch = createEventDispatcher()
   const keyboardHandler = createKeyboardHandler({
     incrementDayHighlighted,
@@ -40,16 +39,10 @@
   $: firstVisibleDate = $monthView.visibleMonth.weeks[0].days[0].date
   $: canIncrementMonth = $monthView.monthIndex < months.length - 1
   $: canDecrementMonth = $monthView.monthIndex > 0
-  $: canIncrementSecMonth = $monthView.secMonthIndex < months.length - 1
-  $: canDecrementSecMonth = $monthView.secMonthIndex > 0
 
   function changeMonth (selectedMonth) {
     month.set(selectedMonth)
     highlighted.set(new Date($year, $month, 1))
-  }
-
-  function changeSecMonth (selectedMonth) {
-    secMonth.set(selectedMonth)
   }
 
   function incrementMonth (direction, date = 1) {
@@ -60,15 +53,6 @@
     month.set(current.getMonth())
     year.set(current.getFullYear())
     highlighted.set(new Date($year, $month, date))
-  }
-
-  function incrementSecMonth (direction) {
-    if (direction === 1 && !canIncrementSecMonth) return
-    if (direction === -1 && !canDecrementSecMonth) return
-    const current = new Date($secYear, $secMonth, 1)
-    current.setMonth(current.getMonth() + direction)
-    secMonth.set(current.getMonth())
-    secYear.set(current.getFullYear())
   }
 
   function incrementDayHighlighted (amount) {
@@ -95,37 +79,32 @@
       return shakeDate(shouldShakeDate, chosen)
     }
 
-    if (!config.isRangePicker) {
-      selectedDate.set(chosen)
-      isDateChosen.set(true)
-      dispatch('close')
-      return dispatch('dateSelected', { date: $selectedDate })
-    }
+    dispatch('date-chosen', { date: chosen })
 
-    if ($firstDate) {
-      if ($isDateChosen) {
-        selectedEndDate.set(chosen)
-      }
-      if (chosen <= $selectedEndDate || !$isDateChosen) {
-        selectedDate.set(chosen)
-        selectedEndDate.set($selectedDate)
-      }
-    } else {
-      if (chosen >= $selectedDate) {
-        selectedEndDate.set(chosen)
-      } else {
-        selectedEndDate.set($selectedDate)
-        selectedDate.set(chosen)
-      }
-      dispatch('close')
-      isDateChosen.set(true)
-    }
+    // if ($firstDate) {
+    //   if ($isDateChosen) {
+    //     selectedEndDate.set(chosen)
+    //   }
+    //   if (chosen <= $selectedEndDate || !$isDateChosen) {
+    //     selectedDate.set(chosen)
+    //     selectedEndDate.set($selectedDate)
+    //   }
+    // } else {
+    //   if (chosen >= $selectedDate) {
+    //     selectedEndDate.set(chosen)
+    //   } else {
+    //     selectedEndDate.set($selectedDate)
+    //     selectedDate.set(chosen)
+    //   }
+    //   dispatch('close')
+    //   isDateChosen.set(true)
+    // }
   
-    if (!$firstDate) {
-      dispatch('dateSelected', { from: $selectedDate, to: $selectedEndDate })
-    }
+    // if (!$firstDate) {
+    //   dispatch('dateSelected', { from: $selectedDate, to: $selectedEndDate })
+    // }
 
-    firstDate.update(v => !v)
+    // firstDate.update(v => !v)
     return true
   }
 </script>

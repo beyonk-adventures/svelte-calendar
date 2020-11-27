@@ -60,9 +60,7 @@ function setup (months, selected, selectedEnd, start, end, config) {
     firstDate: writable(true),
     highlighted: writable(today),
     formatter,
-    isDateChosen: writable(false),
-    time: writable('12:00'),
-    isDaytime: writable(true)
+    isDateChosen: writable(false)
   }
 }
 

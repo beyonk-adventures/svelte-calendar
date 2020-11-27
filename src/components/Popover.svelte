@@ -42,12 +42,12 @@
   }
 
   onMount(() => {
-    config.closeOnFocusLoss && document.addEventListener('click', checkForFocusLoss)
+    //config.closeOnFocusLoss && document.addEventListener('click', checkForFocusLoss)
     if (!trigger) { return }
     triggerContainer.appendChild(trigger.parentNode.removeChild(trigger))
 
     return () => {
-      config.closeOnFocusLoss && document.removeEventListener('click', checkForFocusLoss)
+      //config.closeOnFocusLoss && document.removeEventListener('click', checkForFocusLoss)
     }
   })
 

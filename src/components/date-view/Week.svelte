@@ -1,12 +1,11 @@
 <script>
-  import { areDatesEquivalent, isDateBetweenSelected } from './lib/helpers'
+  import { areDatesEquivalent, isDateBetweenSelected } from '../lib/helpers'
   import { fly } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
-
-  import { contextKey } from './lib/context'
+  import { contextKey } from '../lib/context'
   import { getContext } from 'svelte'
 
-  const { config, selectedDate, selectedEndDate, shouldShakeDate, highlighted } = getContext(contextKey)
+  const { config, selectedDate, shouldShakeDate, highlighted } = getContext(contextKey)
 
   const dispatch = createEventDispatcher()
 
@@ -19,7 +18,7 @@
   in:fly|local={{ x: direction * 50, duration: 180, delay: 90 }}
 >
   {#each days as day}
-    {#if $selectedEndDate}
+    <!-- {#if $selectedEndDate}
       <div 
         class="day"
         class:is-range-picker={config.isRangePicker}
@@ -42,12 +41,12 @@
           class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
           class:disabled={!day.selectable}
           type="button"
-          on:click={() => dispatch('dateSelected', day.date)}
+          on:click={() => dispatch('chosen', { date: day.date })}
         >
           {day.date.getDate()}
         </button>
       </div>
-    {:else}
+    {:else} -->
       <div 
         class="day" 
         class:outside-month={!day.partOfMonth}
@@ -62,12 +61,12 @@
           class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
           class:disabled={!day.selectable}
           type="button"
-          on:click={() => dispatch('dateSelected', day.date)}
+          on:click={() => dispatch('chosen', { date: day.date })}
         >
           {day.date.getDate()}
         </button>
       </div>
-    {/if}
+    <!-- {/if} -->
   {/each}
 </div>
 

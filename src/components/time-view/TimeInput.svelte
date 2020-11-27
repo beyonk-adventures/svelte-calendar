@@ -1,9 +1,9 @@
-<div class="time-picker" class:night={!$daytime}>
+<div class="time-picker" class:night={!$isDaytime}>
   <div class="controls">
     <Chevron up={true} on:click={() => increment('hour')} />
     <Chevron up={true} on:click={() => increment('minute')} />
   </div>
-  <input type="text" use:timeInput={time} />
+  <input type="text" use:timeInput={timeStore} />
   <div class="controls">
     <Chevron up={false} on:click={() => decrement('hour')} />
     <Chevron up={false} on:click={() => decrement('minute')} />
@@ -11,16 +11,23 @@
 </div>
 
 <script>
+  import { contextKey } from '../lib/context.js'
   import { onMount, getContext } from 'svelte'
   import Chevron from './Chevron.svelte'
   import { timeInput } from './time-input.js'
   import { createStore } from './time-store.js'
-  import { contextKey } from '../lib/context.js'
+  import dayjs from 'dayjs/esm'
 
-  const { time, isDaytime, config } = getContext(contextKey)
-  const { daytime, increment, decrement } = createStore(time, config.morning, config.night)
-  
-  onMount(() => daytime.subscribe(d => isDaytime.set(d)))
+  export let pickerContextKey
+
+  const { config } = getContext(contextKey)
+  const { date, isDaytime } = getContext(pickerContextKey)
+  const { increment, decrement, time: timeStore } = createStore($date, config.morning, config.night)
+
+  onMount(() => timeStore.subscribe(ts => {
+    const [ d, m ] = ts.split(':').map(g => parseInt(g))
+    date.update(v => dayjs(v).hour(d).minute(m).toDate())
+  }))
 </script>
 
 <style>

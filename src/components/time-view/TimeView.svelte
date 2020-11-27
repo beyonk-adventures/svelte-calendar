@@ -1,25 +1,17 @@
 <script>
-  import dayjs from 'dayjs/esm'
   import TimeInput from './TimeInput.svelte'
   import { getContext, createEventDispatcher } from 'svelte'
-  import { contextKey } from '../lib/context.js'
 
   const dispatch = createEventDispatcher()
-  const { selectedDate, time } = getContext(contextKey)
 
-  function confirmTime () {
-    const [ h, m ] = $time.split(':').map(parseInt)
-    selectedDate.set(
-      dayjs(selectedDate).hour(h).minute(m).toDate()
-    )
-    dispatch('close')
-  }
+  export let pickerContextKey
+  const { date } = getContext(pickerContextKey)
 </script>
 
 <div class="time-container">
-  <span>{$selectedDate}</span>
-  <TimeInput />
-  <button class="button" on:click={confirmTime}>confirm</button>
+  <span>{$date}</span>
+  <TimeInput {pickerContextKey} />
+  <button class="button" on:click={() => dispatch('date-chosen', { date: $date })}>confirm</button>
 </div>
 
 <style>

@@ -4,8 +4,7 @@
   import { contextKey, setup } from './lib/context'
   import { createEventDispatcher, setContext, getContext } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
-  import DateView from './DateView.svelte'
-  import TimeView from './time-view/TimeView.svelte'
+  import Picker from './Picker.svelte'
 
   export let rangePicker = false
   export let placeholder = 'Choose Date'
@@ -38,7 +37,7 @@
   const months = getMonths(start, end, selectableCallback, weekStart)
 
   setContext(contextKey, setup(months, selected, selectedEnd, start, end, config))
-  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen, isDaytime } = getContext(contextKey)
+  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen } = getContext(contextKey)
 
   $: dateChosen = $isDateChosen
 
@@ -52,7 +51,20 @@
     popover.close()
   }
 
-  function registerOpen () {
+  function pickEnd (date) {
+    selectedEndDate.set(date)
+    close()
+  }
+
+  function pickStart (date) {
+    selectedDate.set(date)
+    if (!config.isRangePicker) {
+      isDateChosen.set(true)
+    }
+    close()
+  }
+
+  function initialisePicker () {
     highlighted.set(new Date($selectedDate))
     month.set($highlighted.getMonth())
     year.set($highlighted.getFullYear())
@@ -97,36 +109,13 @@
   *:after {
     box-sizing: inherit;
   }
-
-  .calendar {
-    box-sizing: border-box;
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-    width: 100vw;
-    padding: 10px;
-    padding-top: 0;
-    transition: background 0.15s ease;
-  }
-
-  .calendar.day {
-    background-color: white;
-  }
-
-  .calendar.night {
-		background-color: #0DAD83;
-  }
   
-  @media (min-width: 600px) {
-    .calendar {
-      height: auto;
-      width: 320px;
-      max-width: 100%;
-    }
+  .contents.range-picker:first-child {
+    margin-right: 1%;
+  }
 
-    .calendar.is-range-picker {
-      width: 680px;
-    }
+  .contents.range-picker:last-child {
+    margin-left: 1%;
   }
 </style>
 
@@ -138,7 +127,7 @@
   <Popover
     {trigger}
     bind:this={popover}
-    on:opened={registerOpen}
+    on:opened={initialisePicker}
     on:closed={registerClose}>
     <div slot="trigger">
       <slot formatted={$formatter}>
@@ -153,10 +142,11 @@
         {/if}
       </slot>
     </div>
-    <div slot="contents">
-      <div class="calendar" class:day={$isDaytime} class:night={!$isDaytime} class:is-range-picker={config.isRangePicker}>
-        <svelte:component this={DateView} on:close={close} />
-      </div>
+    <div class="contents" slot="contents" class:range-picker={config.isRangePicker}>
+      <Picker pickerContextKey={{}} isStart={true} date={$selectedDate} on:date-chosen={e => pickStart(e.detail.date)} />
+      {#if config.isRangePicker}
+      <Picker pickerContextKey={{}} isStart={false} date={$selectedEndDate} on:date-chosen={e => pickEnd(e.detail.date)} />
+      {/if}
     </div>
   </Popover>
 </div>
