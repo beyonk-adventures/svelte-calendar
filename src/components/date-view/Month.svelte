@@ -1,12 +1,12 @@
 <script>
   import Week from './Week.svelte'
-  import { contextKey } from '../lib/context'
   import { getContext } from 'svelte'
   import { sortedDaysOfWeek } from '../lib/time'
 
+  export let pickerContextKey
   export let id
 
-  const { monthView } = getContext(contextKey)
+  const { monthView } = getContext(pickerContextKey)
 
   let lastId = id
   let direction

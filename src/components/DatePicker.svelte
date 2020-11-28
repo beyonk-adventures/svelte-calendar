@@ -1,12 +1,11 @@
 <script>
   import Popover from './Popover.svelte'
-  import { getMonths } from './lib/helpers'
   import { contextKey, setup } from './lib/context'
   import { createEventDispatcher, setContext, getContext } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
   import Picker from './Picker.svelte'
 
-  export let rangePicker = false
+  export let range = false
   export let placeholder = 'Choose Date'
   export let format = 'DD / MM / YYYY'
   export let start = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
@@ -17,27 +16,27 @@
   export let weekStart = 0
   export let styling = new CalendarStyle()
   export let selected = new Date()
-  export let selectedEnd = rangePicker ? new Date() : null
+  export let selectedEnd = range ? new Date() : null
   export let closeOnFocusLoss = true
-  export let includeTime = false
+  export let time = false
   export let morning = 7
   export let night = 19
 
   const dispatch = createEventDispatcher()
 
   const config = {
-    isRangePicker: rangePicker,
+    isRangePicker: range,
     closeOnFocusLoss,
     format,
     morning,
     night,
-    includeTime
+    time,
+    selectableCallback,
+    weekStart
   }
 
-  const months = getMonths(start, end, selectableCallback, weekStart)
-
-  setContext(contextKey, setup(months, selected, selectedEnd, start, end, config))
-  const { month, year, secMonth, secYear, selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen } = getContext(contextKey)
+  setContext(contextKey, setup(selected, selectedEnd, start, end, config))
+  const { selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen } = getContext(contextKey)
 
   $: dateChosen = $isDateChosen
 
@@ -66,18 +65,19 @@
 
   function initialisePicker () {
     highlighted.set(new Date($selectedDate))
-    month.set($highlighted.getMonth())
-    year.set($highlighted.getFullYear())
+    // do this on load picker
+    // month.set($highlighted.getMonth())
+    // year.set($highlighted.getFullYear())
 
-    if (config.isRangePicker) {
-      if ($selectedDate.getMonth() === $selectedEndDate.getMonth() && $selectedDate.getFullYear() === $selectedEndDate.getFullYear()) {
-        secMonth.set($selectedDate.getMonth() + 1)
-        secYear.set($selectedDate.getFullYear())
-      } else {
-        secMonth.set($selectedEndDate.getMonth())
-        secYear.set($selectedEndDate.getFullYear())
-      }
-    }
+    // if (config.isRangePicker) {
+    //   if ($selectedDate.getMonth() === $selectedEndDate.getMonth() && $selectedDate.getFullYear() === $selectedEndDate.getFullYear()) {
+    //     secMonth.set($selectedDate.getMonth() + 1)
+    //     secYear.set($selectedDate.getFullYear())
+    //   } else {
+    //     secMonth.set($selectedEndDate.getMonth())
+    //     secYear.set($selectedEndDate.getFullYear())
+    //   }
+    // }
     
     dispatch('open')
   }

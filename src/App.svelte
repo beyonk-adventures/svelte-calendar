@@ -49,9 +49,15 @@ $: window.hljs && window.hljs.initHighlightingOnLoad()
 
 <h1>SvelteCalendar</h1>
 <div class='container'>
+	<p>Range with time picker:</p>
+	
+	<div class='text-center'>
+		<DatePicker range={true} time={true} format={dateFormat} on:dateSelected={e => logChoice(e.detail.from, e.detail.to)} />
+  </div>
+
   <p>With a timepicker: </p>
 
-	<DatePicker format='ddd, DD MMM YYYY, HH:mm' includeTime={true} />
+  <DatePicker format='ddd, DD MMM YYYY, HH:mm' time={true} />
 
 	<p>A lightweight date picker written with Svelte. Here is an example: </p>
 
@@ -137,7 +143,7 @@ var cal = new SvelteCalendar(&#123;
 	<p>If it's a range picker, it has from and to:</p>
 	
 	<div class='text-center'>
-		<DatePicker rangePicker={true} format={dateFormat} on:dateSelected={e => logChoice(e.detail.from, e.detail.to)} />
+		<DatePicker range={true} format={dateFormat} on:dateSelected={e => logChoice(e.detail.from, e.detail.to)} />
 	</div>
 
 	<p>You can theme the datepicker:</p>
@@ -173,7 +179,7 @@ var cal = new SvelteCalendar(&#123;
   <p>You can turn the DatePicker into a RangePicker:</p>
 
 	<div class='text-center'>
-		<DatePicker format={dateFormat} rangePicker={true} />
+		<DatePicker format={dateFormat} range={true} />
 	</div>
 
 </div>

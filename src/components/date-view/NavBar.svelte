@@ -3,20 +3,20 @@
   import { contextKey } from '../lib/context'
   import { monthsOfYear } from '../lib/time'
 
-  const { start, end, config, month, secMonth, year, secYear } = getContext(contextKey)
-  const dispatch = createEventDispatcher()
-
+  export let pickerContextKey
   export let canIncrementMonth
   export let canDecrementMonth
-  export let canIncrementSecMonth
-  export let canDecrementSecMonth
+
+  const { start, end } = getContext(contextKey)
+  const { year, month } = getContext(pickerContextKey)
+  const dispatch = createEventDispatcher()
 
   let monthSelectorOpen = false
   let availableMonths
 
   $: {
-    const isOnLowerBoundary = $start.getFullYear() === ($year || $secYear)
-    const isOnUpperBoundary = $end.getFullYear() === ($year || $secYear)
+    const isOnLowerBoundary = $start.getFullYear() === $year
+    const isOnUpperBoundary = $end.getFullYear() === $year
     availableMonths = monthsOfYear.map((m, i) => {
       return Object.assign({}, {
         name: m[0],
@@ -72,35 +72,6 @@
         </div>
       {/each}
   </div>
-{#if config.isRangePicker}
-  <div class="heading-section">
-    <div class="control" 
-      class:enabled={canDecrementSecMonth}
-      on:click={() => dispatch('incrementSecMonth', -1)}>
-      <i class="arrow left"></i>
-    </div>
-    <div class="label" on:click={toggleMonthSelectorOpen}>
-      <span>{monthsOfYear[$secMonth][0]} {$secYear}</span>
-    </div> 
-    <div class="control"
-      class:enabled={canIncrementSecMonth}
-      on:click={() => dispatch('incrementSecMonth', 1)}>
-      <i class="arrow right"></i>
-    </div>
-  </div>
-  <div class="month-selector" class:open={monthSelectorOpen}>
-    {#each availableMonths as monthDefinition, index}
-      <div 
-        class="month-selector--month" 
-        class:selected={index === $secMonth}
-        class:selectable={monthDefinition.selectable}
-        on:click={e => monthSelected(e, { monthDefinition, index })}
-      >
-        <span>{monthDefinition.abbrev}</span>
-      </div>
-    {/each}
-  </div>
-{/if}
 </div>
 
 <style>

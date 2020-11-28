@@ -1,11 +1,13 @@
-<div out:fade|local>
+<div>
   <NavBar
+    {pickerContextKey}
     {canIncrementMonth}
     {canDecrementMonth}
     on:monthSelected={e => changeMonth(e.detail)}
     on:incrementMonth={e => incrementMonth(e.detail)} />
   <Month
     id={visibleMonthsId}
+    {pickerContextKey}
     on:chosen={e => registerSelection(e.detail.date)} />
 </div>
 
@@ -16,9 +18,11 @@
   import { contextKey } from '../lib/context.js'
   import { createKeyboardHandler } from '../lib/keyboard.js'
   import { getContext, createEventDispatcher, onMount } from 'svelte'
-  import { fade } from 'svelte/transition'
 
-  const { months, monthView, year, month, highlighted, shouldShakeDate } = getContext(contextKey)
+  export let pickerContextKey
+
+  const { year, month, monthView } = getContext(pickerContextKey)
+  const { months, highlighted, shouldShakeDate } = getContext(contextKey)
   const dispatch = createEventDispatcher()
   const keyboardHandler = createKeyboardHandler({
     incrementDayHighlighted,
@@ -80,31 +84,6 @@
     }
 
     dispatch('date-chosen', { date: chosen })
-
-    // if ($firstDate) {
-    //   if ($isDateChosen) {
-    //     selectedEndDate.set(chosen)
-    //   }
-    //   if (chosen <= $selectedEndDate || !$isDateChosen) {
-    //     selectedDate.set(chosen)
-    //     selectedEndDate.set($selectedDate)
-    //   }
-    // } else {
-    //   if (chosen >= $selectedDate) {
-    //     selectedEndDate.set(chosen)
-    //   } else {
-    //     selectedEndDate.set($selectedDate)
-    //     selectedDate.set(chosen)
-    //   }
-    //   dispatch('close')
-    //   isDateChosen.set(true)
-    // }
-  
-    // if (!$firstDate) {
-    //   dispatch('dateSelected', { from: $selectedDate, to: $selectedEndDate })
-    // }
-
-    // firstDate.update(v => !v)
     return true
   }
 </script>

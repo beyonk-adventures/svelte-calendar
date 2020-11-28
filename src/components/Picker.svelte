@@ -18,9 +18,9 @@
   export let date
 
   const dispatch = createEventDispatcher()
-  const { config } = getContext(contextKey)
+  const { months, config } = getContext(contextKey)
   
-  const pickerContext = createContext(date, config.morning, config.night)
+  const pickerContext = createContext(date, months, config)
   setContext(pickerContextKey, pickerContext)
   const { date: dateStore, chosen, isDaytime } = pickerContext
 
@@ -29,7 +29,7 @@
   function setDate (value) {
     dateStore.set(value)
 
-    if (component === DateView && config.includeTime) {
+    if (component === DateView && config.time) {
       component = TimeView
     } else if (isStart && !config.isRangePicker) {
       chosen.set(true)
