@@ -1,4 +1,4 @@
-import { derived, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
 import { createFormatter } from './formatter.js'
 
 const contextKey = {}
@@ -25,10 +25,12 @@ function createState (config) {
       const validTimes = config.isTimePicker
         ? (config.isRangePicker ? $chosenEndTime : $chosenStartTime)
         : true
+      const finished = validDates && validTimes
+
       return {
         allDatesChosen: validDates,
         allTimesChosen: validTimes,
-        isDateChosen: validDates && validTimes
+        isDateChosen: finished
       }
     })
   }
@@ -46,6 +48,18 @@ function setup (selected, config) {
 
   const { formatter } = createFormatter(selectedStartDate, selectedEndDate, config)
 
+  const state = createState(config)
+  const swapWatcherUnsubscriber = state.choices.subscribe(({ allDatesChosen, allTimesChosen }) => {
+    if (allDatesChosen || allTimesChosen) {
+      const chosenStart = get(selectedStartDate)
+      const chosenEnd = get(selectedEndDate)
+      if (chosenEnd < chosenStart) {
+        selectedStartDate.set(chosenEnd)
+        selectedEndDate.set(chosenStart)
+      }
+    }
+  })
+
   return Object.assign(
     {
       months,
@@ -57,9 +71,10 @@ function setup (selected, config) {
       isOpen: writable(false),
       isClosing: writable(false),
       highlighted: writable(today),
-      formatter
+      formatter,
+      destroy: swapWatcherUnsubscriber
     },
-    createState(config)
+    state
   )
 }
 

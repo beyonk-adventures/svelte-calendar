@@ -32,11 +32,11 @@
 			</div>
 			<div class="col-lg-8 col-md-7 col-xs-12">
 				<div class="slogan">
-					Svelte Datepicker Developer Documentation
+					Svelte DatePicker Developer Documentation
 				</div>
 			</div>
 			<div class="col-lg-2 col-md-3 col-xs-12 right">
-				<a class="btn" href="http://www.github.com/beyonk-adventures/svelte-mapbox">Github</a>
+				<a class="btn" href="http://www.github.com/beyonk-adventures/svelte-datepicker">Github</a>
 			</div>
 		</div>
 	</div>

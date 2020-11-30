@@ -1,7 +1,7 @@
 <script>
   import Popover from './Popover.svelte'
   import { contextKey, setup } from './lib/context'
-  import { createEventDispatcher, setContext, getContext } from 'svelte'
+  import { createEventDispatcher, setContext, getContext, onDestroy } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
   import View from './view/View.svelte'
 
@@ -48,7 +48,8 @@
     pickStartDate,
     pickEndDate, 
     pickStartTime,
-    pickEndTime
+    pickEndTime,
+    destroy
   } = getContext(contextKey)
 
   $: dateChosen = $choices.isDateChosen
@@ -63,6 +64,8 @@
     highlighted.set(new Date($selectedStartDate))
     dispatch('open')
   }
+
+  onDestroy(destroy)
 </script>
 
 <style>
