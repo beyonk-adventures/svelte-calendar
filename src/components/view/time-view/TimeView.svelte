@@ -1,17 +1,21 @@
 <script>
+  import { contextKey } from '../../lib/context.js'
   import TimeInput from './TimeInput.svelte'
   import { getContext, createEventDispatcher } from 'svelte'
 
   const dispatch = createEventDispatcher()
 
-  export let pickerContextKey
-  const { date } = getContext(pickerContextKey)
+  export let viewContextKey
+  const { date, isStart } = getContext(viewContextKey)
+  const { config } = getContext(contextKey)
 </script>
 
 <div class="time-container">
   <span>{$date}</span>
-  <TimeInput {pickerContextKey} />
-  <button class="button" on:click={() => dispatch('date-chosen', { date: $date })}>confirm</button>
+  <TimeInput {viewContextKey} />
+  {#if !(config.isRangePicker && isStart)}
+  <button class="button" on:click={() => dispatch('time-chosen')}>confirm</button>
+  {/if}
 </div>
 
 <style>

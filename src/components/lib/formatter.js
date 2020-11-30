@@ -1,9 +1,9 @@
 import dayjs from 'dayjs/esm'
 import { derived } from 'svelte/store'
 
-function createFormatter (format, selectedDate, selectedEndDate, isRangePicker) {
-  const formatter = derived([ selectedDate, selectedEndDate ], ([ $selectedDate, $selectedEndDate ]) => {
-    const formattedSelected = $selectedDate && dayjs($selectedDate).format(format)
+function createFormatter (format, selectedStartDate, selectedEndDate, isRangePicker) {
+  const formatter = derived([ selectedStartDate, selectedEndDate ], ([ $selectedStartDate, $selectedEndDate ]) => {
+    const formattedSelected = $selectedStartDate && dayjs($selectedStartDate).format(format)
     const formattedSelectedEnd = isRangePicker && $selectedEndDate && dayjs(selectedEndDate).format(format)
 
     return {

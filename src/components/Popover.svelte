@@ -3,7 +3,7 @@
   import { contextKey } from './lib/context.js'
   import { getTranslate } from './lib/positioning.js'
 
-  const { isOpen, isClosing, config } = getContext(contextKey)
+  const { isOpen, isClosing, choices, resetChoices } = getContext(contextKey)
   const dispatch = createEventDispatcher()
 
   const once = (el, evt, cb) => {
@@ -53,8 +53,9 @@
 
   const doOpen = async () => {
     if (!$isOpen) { isOpen.set(true) }
-    const { x, y } = await getTranslate(w, contentsWrapper, translateX, translateY)
+    resetChoices()
 
+    const { x, y } = await getTranslate(w, contentsWrapper, translateX, translateY)
     translateY = y
     translateX = x
     isOpen.set(true)

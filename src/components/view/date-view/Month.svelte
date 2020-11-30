@@ -1,12 +1,12 @@
 <script>
   import Week from './Week.svelte'
   import { getContext } from 'svelte'
-  import { sortedDaysOfWeek } from '../lib/time'
+  import { sortedDaysOfWeek } from '../../lib/time'
 
-  export let pickerContextKey
+  export let viewContextKey
   export let id
 
-  const { monthView } = getContext(pickerContextKey)
+  const { monthView } = getContext(viewContextKey)
 
   let lastId = id
   let direction
@@ -27,7 +27,8 @@
       </div>
     </div>
     {#each $monthView.visibleMonth.weeks as week (week.id)}
-      <Week 
+      <Week
+        {viewContextKey}
         days={week.days}
         {direction}
         on:chosen

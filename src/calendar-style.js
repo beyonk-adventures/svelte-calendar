@@ -12,7 +12,7 @@ class CalendarStyle {
     this.dayTextColor = '#4a4a4a'
     this.dayHighlightedBackgroundColor = '#efefef'
     this.dayHighlightedTextColor = '#4a4a4a'
-    this.nightModeBackgroundColor = '#0DAD83'
+    this.nightModeBackgroundColor = '#808080'
     this.timeConfirmButtonColor = '#2196F3'
     this.timeConfirmButtonTextColor = '#fff'
 

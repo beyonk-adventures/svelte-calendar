@@ -1,27 +1,28 @@
 <div>
   <NavBar
-    {pickerContextKey}
+    {viewContextKey}
     {canIncrementMonth}
     {canDecrementMonth}
     on:monthSelected={e => changeMonth(e.detail)}
     on:incrementMonth={e => incrementMonth(e.detail)} />
   <Month
+    {viewContextKey}
     id={visibleMonthsId}
-    {pickerContextKey}
     on:chosen={e => registerSelection(e.detail.date)} />
 </div>
 
 <script>
   import Month from './Month.svelte'
   import NavBar from './NavBar.svelte'
-  import { checkIfVisibleDateIsSelectable, shakeDate } from '../lib/feedback.js'
-  import { contextKey } from '../lib/context.js'
-  import { createKeyboardHandler } from '../lib/keyboard.js'
+  import { checkIfVisibleDateIsSelectable, shakeDate } from './feedback.js'
+  import { contextKey } from '../../lib/context.js'
+  import { createKeyboardHandler } from './keyboard.js'
+  import { getDay } from './get-day.js'
   import { getContext, createEventDispatcher, onMount } from 'svelte'
 
-  export let pickerContextKey
+  export let viewContextKey
 
-  const { year, month, monthView } = getContext(pickerContextKey)
+  const { date, year, month, monthView } = getContext(viewContextKey)
   const { months, highlighted, shouldShakeDate } = getContext(contextKey)
   const dispatch = createEventDispatcher()
   const keyboardHandler = createKeyboardHandler({
@@ -49,14 +50,14 @@
     highlighted.set(new Date($year, $month, 1))
   }
 
-  function incrementMonth (direction, date = 1) {
+  function incrementMonth (direction, day = 1) {
     if (direction === 1 && !canIncrementMonth) return
     if (direction === -1 && !canDecrementMonth) return
     const current = new Date($year, $month, 1)
     current.setMonth(current.getMonth() + direction)
     month.set(current.getMonth())
     year.set(current.getFullYear())
-    highlighted.set(new Date($year, $month, date))
+    highlighted.set(new Date($year, $month, day))
   }
 
   function incrementDayHighlighted (amount) {
@@ -83,7 +84,8 @@
       return shakeDate(shouldShakeDate, chosen)
     }
 
-    dispatch('date-chosen', { date: chosen })
+    date.set(chosen)
+    dispatch('date-chosen')
     return true
   }
 </script>

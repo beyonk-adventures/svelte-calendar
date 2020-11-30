@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs/esm'
 import DateView from './date-view/DateView.svelte'
-import { derived, writable } from 'svelte/store'
+import { derived, writable, get } from 'svelte/store'
 
 function createMonthView (months, year, month) {
   let monthIndex = 0
@@ -21,11 +21,9 @@ function createMonthView (months, year, month) {
   })
 }
 
-function createContext (givenDate, months, config) {
-  const chosen = writable(false)
-  const date = writable(givenDate)
-  const year = writable(givenDate.getFullYear())
-  const month = writable(givenDate.getMonth())
+function createViewContext (isStart, date, months, config) {
+  const year = writable(get(date).getFullYear())
+  const month = writable(get(date).getMonth())
   const isDaytime = derived(date, $date => {
     if (!$date) { return true }
     const [ h ] = dayjs($date).format('HH:mm').split(':').map(d => parseInt(d))
@@ -33,8 +31,9 @@ function createContext (givenDate, months, config) {
   })
 
   return {
+    isStart,
     view: DateView,
-    chosen,
+    allDatesChosen: writable(false),
     date,
     isDaytime,
     year,
@@ -44,5 +43,5 @@ function createContext (givenDate, months, config) {
 }
 
 export {
-  createContext
+  createViewContext
 }

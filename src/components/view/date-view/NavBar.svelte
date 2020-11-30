@@ -1,22 +1,22 @@
 <script>
   import { createEventDispatcher, getContext } from 'svelte'
-  import { contextKey } from '../lib/context'
-  import { monthsOfYear } from '../lib/time'
+  import { contextKey } from '../../lib/context'
+  import { monthsOfYear } from '../../lib/time'
 
-  export let pickerContextKey
+  export let viewContextKey
   export let canIncrementMonth
   export let canDecrementMonth
 
-  const { start, end } = getContext(contextKey)
-  const { year, month } = getContext(pickerContextKey)
+  const { config } = getContext(contextKey)
+  const { year, month } = getContext(viewContextKey)
   const dispatch = createEventDispatcher()
 
   let monthSelectorOpen = false
   let availableMonths
 
   $: {
-    const isOnLowerBoundary = $start.getFullYear() === $year
-    const isOnUpperBoundary = $end.getFullYear() === $year
+    const isOnLowerBoundary = config.start.getFullYear() === $year
+    const isOnUpperBoundary = config.end.getFullYear() === $year
     availableMonths = monthsOfYear.map((m, i) => {
       return Object.assign({}, {
         name: m[0],
@@ -25,8 +25,8 @@
         selectable:
           (!isOnLowerBoundary && !isOnUpperBoundary) ||
         (
-          (!isOnLowerBoundary || i >= $start.getMonth()) &&
-          (!isOnUpperBoundary || i <= $end.getMonth())
+          (!isOnLowerBoundary || i >= config.start.getMonth()) &&
+          (!isOnUpperBoundary || i <= config.end.getMonth())
         )
       })
     })

@@ -3,7 +3,7 @@
   import { contextKey, setup } from './lib/context'
   import { createEventDispatcher, setContext, getContext } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
-  import Picker from './Picker.svelte'
+  import View from './view/View.svelte'
 
   export let range = false
   export let placeholder = 'Choose Date'
@@ -25,20 +25,34 @@
   const dispatch = createEventDispatcher()
 
   const config = {
+    start,
+    end,
     isRangePicker: range,
+    isTimePicker: time,
     closeOnFocusLoss,
     format,
     morning,
     night,
-    time,
     selectableCallback,
     weekStart
   }
 
-  setContext(contextKey, setup(selected, selectedEnd, start, end, config))
-  const { selectedDate, selectedEndDate, isOpen, isClosing, highlighted, formatter, isDateChosen } = getContext(contextKey)
+  setContext(contextKey, setup(selected, selectedEnd, config))
+  const {
+    selectedStartDate,
+    selectedEndDate,
+    isOpen,
+    isClosing,
+    highlighted,
+    formatter,
+    choices,
+    pickStartDate,
+    pickEndDate, 
+    pickStartTime,
+    pickEndTime
+  } = getContext(contextKey)
 
-  $: dateChosen = $isDateChosen
+  $: dateChosen = $choices.isDateChosen
 
   let popover
 
@@ -46,39 +60,8 @@
     dispatch('close')
   }
 
-  function close () {
-    popover.close()
-  }
-
-  function pickEnd (date) {
-    selectedEndDate.set(date)
-    close()
-  }
-
-  function pickStart (date) {
-    selectedDate.set(date)
-    if (!config.isRangePicker) {
-      isDateChosen.set(true)
-    }
-    close()
-  }
-
   function initialisePicker () {
-    highlighted.set(new Date($selectedDate))
-    // do this on load picker
-    // month.set($highlighted.getMonth())
-    // year.set($highlighted.getFullYear())
-
-    // if (config.isRangePicker) {
-    //   if ($selectedDate.getMonth() === $selectedEndDate.getMonth() && $selectedDate.getFullYear() === $selectedEndDate.getFullYear()) {
-    //     secMonth.set($selectedDate.getMonth() + 1)
-    //     secYear.set($selectedDate.getFullYear())
-    //   } else {
-    //     secMonth.set($selectedEndDate.getMonth())
-    //     secYear.set($selectedEndDate.getFullYear())
-    //   }
-    // }
-    
+    highlighted.set(new Date($selectedStartDate))
     dispatch('open')
   }
 </script>
@@ -133,7 +116,7 @@
       <slot formatted={$formatter}>
         {#if !trigger}
           <button class="calendar-button" type="button">
-            {#if $isDateChosen}
+            {#if $choices.isDateChosen}
               {$formatter.formattedCombined}
             {:else}
               {placeholder}
@@ -143,9 +126,23 @@
       </slot>
     </div>
     <div class="contents" slot="contents" class:range-picker={config.isRangePicker}>
-      <Picker pickerContextKey={{}} isStart={true} date={$selectedDate} on:date-chosen={e => pickStart(e.detail.date)} />
+      <View
+        viewContextKey={{}}
+        isStart={true}
+        date={selectedStartDate}
+        on:date-chosen={() => pickStartDate()}
+        on:time-chosen={() => pickStartTime()}
+        on:close={() => popover.close()}
+      />
       {#if config.isRangePicker}
-      <Picker pickerContextKey={{}} isStart={false} date={$selectedEndDate} on:date-chosen={e => pickEnd(e.detail.date)} />
+      <View
+        viewContextKey={{}}
+        isStart={false}
+        date={selectedEndDate}
+        on:date-chosen={() => pickEndDate()}
+        on:time-chosen={() => pickEndTime()}
+        on:close={() => popover.close()}
+      />
       {/if}
     </div>
   </Popover>

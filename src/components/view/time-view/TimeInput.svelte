@@ -11,17 +11,17 @@
 </div>
 
 <script>
-  import { contextKey } from '../lib/context.js'
+  import { contextKey } from '../../lib/context.js'
   import { onMount, getContext } from 'svelte'
   import Chevron from './Chevron.svelte'
   import { timeInput } from './time-input.js'
   import { createStore } from './time-store.js'
   import dayjs from 'dayjs/esm'
 
-  export let pickerContextKey
+  export let viewContextKey
 
   const { config } = getContext(contextKey)
-  const { date, isDaytime } = getContext(pickerContextKey)
+  const { date, isDaytime } = getContext(viewContextKey)
   const { increment, decrement, time: timeStore } = createStore($date, config.morning, config.night)
 
   onMount(() => timeStore.subscribe(ts => {

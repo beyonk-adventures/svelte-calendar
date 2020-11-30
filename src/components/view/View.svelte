@@ -1,41 +1,45 @@
 <div class="calendar" class:day={$isDaytime} class:night={!$isDaytime} class:is-range-picker={config.isRangePicker}>
+  {JSON.stringify($choices)}
   <svelte:component
-    {pickerContextKey}
+    {viewContextKey}
     this={component}
-    on:date-chosen={e => setDate(e.detail.date)}
+    on:date-chosen
+    on:time-chosen
   />
 </div>
 
 <script>
-  import { contextKey } from './lib/context'
-  import { createContext } from './picker-context.js'
-  import { setContext, getContext, createEventDispatcher } from 'svelte'
+  import { contextKey } from '../lib/context'
+  import { createViewContext } from './view-context.js'
+  import { setContext, getContext, onMount, createEventDispatcher } from 'svelte'
   import DateView from './date-view/DateView.svelte'
   import TimeView from './time-view/TimeView.svelte'
 
-  export let pickerContextKey
+  export let viewContextKey
   export let isStart
   export let date
 
   const dispatch = createEventDispatcher()
-  const { months, config } = getContext(contextKey)
+
+  const { months, config, choices } = getContext(contextKey)
   
-  const pickerContext = createContext(date, months, config)
-  setContext(pickerContextKey, pickerContext)
-  const { date: dateStore, chosen, isDaytime } = pickerContext
+  const viewContext = createViewContext(isStart, date, months, config)
+  setContext(viewContextKey, viewContext)
+  const { isDaytime } = viewContext
 
   let component = DateView
 
-  function setDate (value) {
-    dateStore.set(value)
-
-    if (component === DateView && config.time) {
-      component = TimeView
-    } else if (isStart && !config.isRangePicker) {
-      chosen.set(true)
-      dispatch('date-chosen', { date: $dateStore })
-    }
-  }
+  onMount(() => {
+    return choices.subscribe(({ allDatesChosen, allTimesChosen }) => {
+      if (!allDatesChosen) {
+        component = DateView 
+      } else if (allDatesChosen && !allTimesChosen) {
+        component = TimeView
+      } else if (allDatesChosen && allTimesChosen) {
+        dispatch('close')
+      }
+    })
+  })
 </script>
 
 <style>
@@ -64,9 +68,9 @@
       width: 320px;
       max-width: 100%;
     }
-/* 
+ 
     .calendar.is-range-picker {
       width: 680px;
-    } */
+    }
   }
 </style>
