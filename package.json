@@ -1,4 +1,6 @@
 {
+  "name": "@beyonk/svelte-mapbox",
+  "svelte": "src/main.js",
   "scripts": {
     "dev": "snowpack dev",
     "build": "snowpack build",
