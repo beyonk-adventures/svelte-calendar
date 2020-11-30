@@ -1,10 +1,5 @@
 <div>
-  <NavBar
-    {viewContextKey}
-    {canIncrementMonth}
-    {canDecrementMonth}
-    on:monthSelected={e => changeMonth(e.detail)}
-    on:incrementMonth={e => incrementMonth(e.detail)} />
+  <NavBar {viewContextKey} />
   <Month
     {viewContextKey}
     id={visibleMonthsId}
@@ -22,68 +17,30 @@
   import NavBar from './NavBar.svelte'
   import { checkIfVisibleDateIsSelectable, shakeDate } from './feedback.js'
   import { contextKey } from '../../lib/context.js'
-  import { createKeyboardHandler } from './keyboard.js'
-  import { getDay } from './get-day.js'
+  // import { createKeyboardHandler } from './keyboard.js'
   import { getContext, createEventDispatcher, onMount } from 'svelte'
 
   export let viewContextKey
 
-  const { date, year, month, monthView } = getContext(viewContextKey)
-  const { months, highlighted, shouldShakeDate } = getContext(contextKey)
+  const { date, year, month } = getContext(viewContextKey)
+  const { months, shouldShakeDate } = getContext(contextKey)
   const dispatch = createEventDispatcher()
-  const keyboardHandler = createKeyboardHandler({
-    incrementDayHighlighted,
-    incrementMonth,
-    registerSelection: () => registerSelection($highlighted),
-    close: () => dispatch('close')
-  })
 
-  onMount(() => {
-    document.addEventListener('keydown', keyboardHandler)
-    return () => {
-      document.removeEventListener('keydown', keyboardHandler)
-    }
-  })
+  // const keyboardHandler = createKeyboardHandler({
+  //   incrementDayHighlighted,
+  //   incrementMonth,
+  //   registerSelection: () => registerSelection($highlighted),
+  //   close: () => dispatch('close')
+  // })
+
+  // onMount(() => {
+  //   document.addEventListener('keydown', keyboardHandler)
+  //   return () => {
+  //     document.removeEventListener('keydown', keyboardHandler)
+  //   }
+  // })
 
   $: visibleMonthsId = $year + $month / 100
-  $: lastVisibleDate = $monthView.visibleMonth.weeks[$monthView.visibleMonth.weeks.length - 1].days[6].date
-  $: firstVisibleDate = $monthView.visibleMonth.weeks[0].days[0].date
-  $: canIncrementMonth = $monthView.monthIndex < months.length - 1
-  $: canDecrementMonth = $monthView.monthIndex > 0
-
-  function changeMonth (selectedMonth) {
-    month.set(selectedMonth)
-    highlighted.set(new Date($year, $month, 1))
-  }
-
-  function incrementMonth (direction, day = 1) {
-    if (direction === 1 && !canIncrementMonth) return
-    if (direction === -1 && !canDecrementMonth) return
-    const current = new Date($year, $month, 1)
-    current.setMonth(current.getMonth() + direction)
-    month.set(current.getMonth())
-    year.set(current.getFullYear())
-    highlighted.set(new Date($year, $month, day))
-  }
-
-  function incrementDayHighlighted (amount) {
-    const proposedDate = new Date($highlighted)
-    proposedDate.setDate($highlighted.getDate() + amount)
-    const correspondingDayObj = getDay(
-      months,
-      proposedDate.getMonth(),
-      proposedDate.getDate(),
-      proposedDate.getFullYear()
-    )
-    if (!correspondingDayObj || !correspondingDayObj.isInRange) { return }
-    highlighted.set(proposedDate)
-    if (amount > 0 && $highlighted > lastVisibleDate) {
-      incrementMonth(1, $highlighted.getDate())
-    }
-    if (amount < 0 && $highlighted < firstVisibleDate) {
-      incrementMonth(-1, $highlighted.getDate())
-    }
-  }
 
   function registerSelection (chosen) {
     if (!checkIfVisibleDateIsSelectable(months, chosen)) {

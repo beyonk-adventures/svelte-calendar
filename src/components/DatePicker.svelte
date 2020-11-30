@@ -23,6 +23,9 @@
 
   const dispatch = createEventDispatcher()
 
+  const startContextKey = {}
+  const endContextKey = {}
+
   const config = {
     start,
     end,
@@ -137,7 +140,7 @@
     </div>
     <div class="contents" slot="contents" class:is-range-picker={config.isRangePicker}>
       <View
-        viewContextKey={{}}
+        viewContextKey={startContextKey}
         isStart={true}
         date={selectedStartDate}
         on:date-chosen={() => pickStartDate()}
@@ -146,7 +149,7 @@
       />
       {#if config.isRangePicker}
       <View
-        viewContextKey={{}}
+        viewContextKey={endContextKey}
         isStart={false}
         date={selectedEndDate}
         on:date-chosen={() => pickEndDate()}

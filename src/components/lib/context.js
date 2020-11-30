@@ -50,7 +50,7 @@ function setup (selected, config) {
 
   const state = createState(config)
   const swapWatcherUnsubscriber = state.choices.subscribe(({ allDatesChosen, allTimesChosen }) => {
-    if (allDatesChosen || allTimesChosen) {
+    if (config.isRangePicker && (allDatesChosen || allTimesChosen)) {
       const chosenStart = get(selectedStartDate)
       const chosenEnd = get(selectedEndDate)
       if (chosenEnd < chosenStart) {
