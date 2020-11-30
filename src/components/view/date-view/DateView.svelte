@@ -11,6 +11,12 @@
     on:chosen={e => registerSelection(e.detail.date)} />
 </div>
 
+<style>
+  div {
+    padding: 10px;
+  }
+</style>
+
 <script>
   import Month from './Month.svelte'
   import NavBar from './NavBar.svelte'

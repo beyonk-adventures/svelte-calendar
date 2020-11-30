@@ -1,4 +1,4 @@
-<div class="time-picker" class:night={!$isDaytime}>
+<div class="time-picker" class:is-night={!$isDaytime}>
   <div class="controls">
     <Chevron up={true} on:click={() => increment('hour')} />
     <Chevron up={true} on:click={() => increment('minute')} />
@@ -38,12 +38,12 @@
     width: 60%;
   }
   
-  .time-picker.night {
-    color: white;
+  .time-picker.is-night {
+    color: var(--night-mode-text-color);
   }
   
-  .time-picker.night input {
-    color: white;
+  .time-picker.is-night input {
+    color: var(--night-mode-text-color);
   }
   
   input {

@@ -1,4 +1,5 @@
 <script>
+  import dayjs from 'dayjs/esm'
   import { contextKey } from '../../lib/context.js'
   import TimeInput from './TimeInput.svelte'
   import { getContext, createEventDispatcher } from 'svelte'
@@ -6,31 +7,54 @@
   const dispatch = createEventDispatcher()
 
   export let viewContextKey
-  const { date, isStart } = getContext(viewContextKey)
+  const { date, isStart, isDaytime } = getContext(viewContextKey)
   const { config } = getContext(contextKey)
 </script>
 
-<div class="time-container">
-  <span>{$date}</span>
+<div class="time-container" class:is-night={!$isDaytime}>
+  <span class="chosen-date">{dayjs($date).format(config.format)}</span>
   <TimeInput {viewContextKey} />
-  {#if !(config.isRangePicker && isStart)}
-  <button class="button" on:click={() => dispatch('time-chosen')}>confirm</button>
-  {/if}
+  <div class="cta">
+    {#if !(config.isRangePicker && isStart)}
+    <button class="button" on:click={() => dispatch('time-chosen')}>confirm</button>
+    {/if}
+  </div>
 </div>
 
 <style>
   .time-container {
-    height: 300px;
+    min-height: 300px;
+    padding: 10px;
     display: flex;
     flex: 1 0 auto;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+    background-color: white;
+    transition: background 0.15s ease;
+  }
+
+  .chosen-date {
+    margin: 6px 0 12px 0;
+    color: var(--night-mode-text-color);
+    font-weight: 600;
+    font-size: 20px;
+  }
+
+  .time-container.is-night {
+    background-color: var(--night-mode-background-color);
+  }
+
+  .cta {
+    display: flex;
+    margin: 24px 0;
+    height: 40px;
+    width: 100%;
+    justify-content: center;
   }
 
   .button {
     font-size: 16px;
-    padding: 12px;
     border: 0;
     width: 60%;
     border-radius: 5px;

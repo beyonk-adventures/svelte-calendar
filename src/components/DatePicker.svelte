@@ -92,13 +92,21 @@
   *:after {
     box-sizing: inherit;
   }
-  
-  .contents.range-picker:first-child {
-    margin-right: 1%;
+
+  .contents {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
   }
 
-  .contents.range-picker:last-child {
-    margin-left: 1%;
+  @media (min-width: 600px) {
+    .contents {
+      flex-direction: row;
+    }
+
+    .contents.is-range-picker {
+      width: 680px;
+    }
   }
 </style>
 
@@ -125,7 +133,7 @@
         {/if}
       </slot>
     </div>
-    <div class="contents" slot="contents" class:range-picker={config.isRangePicker}>
+    <div class="contents" slot="contents" class:is-range-picker={config.isRangePicker}>
       <View
         viewContextKey={{}}
         isStart={true}

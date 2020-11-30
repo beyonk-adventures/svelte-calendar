@@ -1,5 +1,4 @@
-<div class="calendar" class:day={$isDaytime} class:night={!$isDaytime} class:is-range-picker={config.isRangePicker}>
-  {JSON.stringify($choices)}
+<div class="calendar" class:day={$isDaytime} class:night={!$isDaytime}>
   <svelte:component
     {viewContextKey}
     this={component}
@@ -46,31 +45,17 @@
   .calendar {
     box-sizing: border-box;
     position: relative;
-    overflow: hidden;
     user-select: none;
     width: 100vw;
-    padding: 10px;
     padding-top: 0;
-    transition: background 0.15s ease;
-  }
-
-  .calendar.day {
-    background-color: white;
-  }
-
-  .calendar.night {
-		background-color: #0DAD83;
   }
   
   @media (min-width: 600px) {
     .calendar {
       height: auto;
-      width: 320px;
+      width: 50%;
       max-width: 100%;
-    }
- 
-    .calendar.is-range-picker {
-      width: 680px;
+      display: inline-block;
     }
   }
 </style>

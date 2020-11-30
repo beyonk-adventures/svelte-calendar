@@ -76,7 +76,7 @@
     class:shrink={$isClosing}
     style="transform: translate(-50%,-50%) translate({translateX}px, {translateY}px)" 
     bind:this={contentsWrapper}>
-    <div class="contents" bind:this={contentsAnimated}>
+    <div class="wrapper" bind:this={contentsAnimated}>
       <div class="contents-inner">
         <slot name="contents"></slot>
       </div>
@@ -99,7 +99,7 @@
     display: none;
   }
 
-  .contents { 
+  .wrapper { 
     background: #fff;
     box-shadow: 0px 10px 26px rgba(0,0,0,0.4) ;
     opacity: .8; 
@@ -116,13 +116,13 @@
     display: block;
   }
 
-  .contents-wrapper.visible .contents { 
+  .contents-wrapper.visible .wrapper { 
     opacity: 1; 
     transform: scale(1);
     display: block;
   }
 
-  .contents-wrapper.shrink .contents { 
+  .contents-wrapper.shrink .wrapper { 
     animation: shrink 150ms forwards cubic-bezier(.92,.09,.18,1.05);
   }
 

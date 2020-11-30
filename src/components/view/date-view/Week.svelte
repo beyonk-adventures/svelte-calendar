@@ -9,7 +9,7 @@
   export let direction
 
   const { config, shouldShakeDate, highlighted, selectedStartDate, selectedEndDate } = getContext(contextKey)
-  const { isStart, date } = getContext(viewContextKey)
+  const { isStart, date, isDaytime } = getContext(viewContextKey)
 
   const dispatch = createEventDispatcher()
 </script>
@@ -19,64 +19,35 @@
   in:fly|local={{ x: direction * 50, duration: 180, delay: 90 }}
 >
   {#each days as day}
-    <!-- {#if $selectedEndDate}
-      <div 
-        class="day"
-        class:is-range-picker={config.isRangePicker}
-        class:outside-month={!day.partOfMonth}
-        class:first-of-month={day.firstOfMonth}
-        class:last-of-month={day.lastOfMonth}
-        class:selected={areDatesEquivalent(day.date, $selectedStartDate)}
-        class:selectedEnd={areDatesEquivalent(day.date, $selectedEndDate)}
-        class:betweenSelected={isDateBetweenSelected($selectedStartDate, $selectedEndDate, day.date)}
-        class:is-today={
-          day.isToday &&
-          $selectedStartDate === $selectedEndDate &&
-          !isDateBetweenSelected($selectedStartDate, $selectedEndDate, day.date)
-        }
-        class:is-disabled={!day.selectable}
+    <div 
+      class="day"
+      class:is-night={!$isDaytime}
+      class:is-range-picker={config.isRangePicker}
+      class:outside-month={!day.partOfMonth}
+      class:first-of-month={day.firstOfMonth}
+      class:last-of-month={day.lastOfMonth}
+      class:selection-start={isStart && areDatesEquivalent(day.date, $date)}
+      class:selection-end={config.isRangePicker && !isStart && areDatesEquivalent(day.date, $date)}
+      class:part-of-range={
+        config.isRangePicker &&
+          (
+            isStart && isDateBetweenSelected($date, $selectedEndDate, day.date)
+            || !isStart && isDateBetweenSelected($selectedStartDate, $date, day.date)
+          )}
+      class:is-today={day.isToday}
+      class:is-disabled={!day.selectable}
+    >
+      <button 
+        class="day--label" 
+        class:highlighted={areDatesEquivalent(day.date, $highlighted)}
+        class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
+        class:disabled={!day.selectable}
+        type="button"
+        on:click={() => dispatch('chosen', { date: day.date })}
       >
-        <button 
-          class="day--label" 
-          class:highlighted={areDatesEquivalent(day.date, $highlighted)}
-          class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
-          class:disabled={!day.selectable}
-          type="button"
-          on:click={() => dispatch('chosen', { date: day.date })}
-        >
-          {day.date.getDate()}
-        </button>
-      </div> -->
-    <!-- {:else} -->
-      <div 
-        class="day"
-        class:is-range-picker={config.isRangePicker}
-        class:outside-month={!day.partOfMonth}
-        class:first-of-month={day.firstOfMonth}
-        class:last-of-month={day.lastOfMonth}
-        class:selection-start={isStart && areDatesEquivalent(day.date, $date)}
-        class:selection-end={config.isRangePicker && !isStart && areDatesEquivalent(day.date, $date)}
-        class:part-of-range={
-          config.isRangePicker &&
-            (
-              isStart && isDateBetweenSelected($date, $selectedEndDate, day.date)
-              || !isStart && isDateBetweenSelected($selectedStartDate, $date, day.date)
-            )}
-        class:is-today={day.isToday}
-        class:is-disabled={!day.selectable}
-      >
-        <button 
-          class="day--label" 
-          class:highlighted={areDatesEquivalent(day.date, $highlighted)}
-          class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
-          class:disabled={!day.selectable}
-          type="button"
-          on:click={() => dispatch('chosen', { date: day.date })}
-        >
-          {day.date.getDate()}
-        </button>
-      </div>
-    <!-- {/if} -->
+        {day.date.getDate()}
+      </button>
+    </div>
   {/each}
 </div>
 
@@ -144,6 +115,10 @@
     transition: all 100ms linear;
     border: none;
     outline: none;
+  }
+  .day.is-night .day--label {
+    color: var(--day-text-color-is-night);
+    background: var(--day-background-color-is-night);
   }
   .day--label.disabled { 
     cursor: default;
@@ -213,7 +188,7 @@
   .day.selection-start.selection-end:before,
   .day.first-of-month:not(.outside-month).part-of-range:before,
   .day.last-of-month:not(.outside-month).part-of-range:before {
-    background-color: transparent;
+    background-color: var(--day-background-color);
     border: none;
     color: var(--day-text-color);
   }
@@ -228,11 +203,11 @@
   }
   .day.is-range-picker.first-of-month:not(.outside-month).selection-end:not(.selection-start):before,
   .day.is-range-picker.first-of-month:not(.outside-month).part-of-range {
-    background: linear-gradient(to left, var(--passive-highlight-color) 70%, var(--button-background-color));
+    background: linear-gradient(to left, var(--passive-highlight-color) 70%, transparent);
   }
   .day.is-range-picker.last-of-month:not(.outside-month).selection-start:not(.selection-end):before,
   .day.is-range-picker.last-of-month:not(.outside-month).part-of-range {
-    background: linear-gradient(to right, var(--passive-highlight-color) 70%, var(--button-background-color));
+    background: linear-gradient(to right, var(--passive-highlight-color) 70%, transparent);
   }
   .day.is-today .day--label,
   .day.selection-start.selection-end.is-today .day--label {
