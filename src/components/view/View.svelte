@@ -1,4 +1,4 @@
-<div class="calendar" class:day={$isDaytime} class:night={!$isDaytime}>
+<div class="calendar" class:is-range-picker={config.isRangePicker} class:day={$isDaytime} class:night={!$isDaytime}>
   <svelte:component
     {viewContextKey}
     this={component}
@@ -53,9 +53,13 @@
   @media (min-width: 600px) {
     .calendar {
       height: auto;
-      width: 50%;
       max-width: 100%;
+      width: 100%;
       display: inline-block;
+    }
+
+    .calendar.is-range-picker {
+      width: 50%;
     }
   }
 </style>

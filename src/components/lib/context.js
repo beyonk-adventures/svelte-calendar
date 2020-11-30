@@ -39,14 +39,12 @@ function setup (selected, config) {
   today.setHours(0, 0, 0, 0)
 
   const months = getMonths(config.start, config.end, config.selectableCallback, config.weekStart)
-
   const [ preSelectedStart, preSelectedEnd ] = Array.isArray(selected) ? selected : [ selected, null ]
-
   const givenDate = (preSelectedStart.getTime() < config.start.getTime() || preSelectedStart.getTime() > config.end.getTime()) ? config.start : preSelectedStart
   const selectedStartDate = writable(givenDate)
   const selectedEndDate = writable(preSelectedEnd)
 
-  const { formatter } = createFormatter(config.format, selectedStartDate, selectedEndDate, config.isRangePicker)
+  const { formatter } = createFormatter(selectedStartDate, selectedEndDate, config)
 
   return Object.assign(
     {

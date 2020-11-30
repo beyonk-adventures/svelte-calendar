@@ -50,7 +50,8 @@
 						<h4>Navigation</h4>	
 						<nav class="side-nav">
 							<ul>
-								<li><a href="/">Home</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/date-picker">Date Picker</a></li>
 								<li><a href="/range-picker">Range Picker</a></li>
 							</ul>					
 						</nav>
@@ -64,6 +65,37 @@
               <a href="/range-picker/without-time">Without Time</a>
             </nav>
           </Route>
+          <Route path="/date-picker/*">
+            <Route path="/*">
+              <nav>
+                <a href="/date-picker/with-time">With Time</a>
+                <a href="/date-picker/without-time">Without Time</a>
+                <a href="/date-picker/with-time/with-selected-date">With Selected Date</a>
+              </nav>
+              <h1>Svelte Date Picker</h1>
+            </Route>
+            <Route path="/without-time/*">
+              <h2>Without Time Choice</h2>
+              <Route path="/">
+                <DatePicker format='ddd, DD MMM YYYY' />
+              </Route>
+            </Route>
+            <Route path="/with-time/*">
+              <Route path="/*">
+                <h2>With Time Choice</h2>
+              </Route>
+              <Route path="/">
+                <DatePicker format='ddd, DD MMM YYYY HH:mm' time={true} />
+              </Route>
+              <Route path="/with-selected-date">
+                <h3>With Selected Date</h3>
+                <DatePicker
+                  format='ddd, DD MMM YYYY HH:mm'
+                  selected={dayjs('2020-04-20T16:15:33.000Z').toDate()}
+                  time={true} />
+              </Route>
+            </Route>
+          </Route>
           <Route path="/range-picker/*">
             <Route path="/*">
               <nav>
@@ -76,7 +108,7 @@
             <Route path="/without-time/*">
               <h2>Without Time Choice</h2>
               <Route path="/">
-                <DatePicker format='ddd, DD MMM YYYY HH:mm' range={true} />
+                <DatePicker format='ddd, DD MMM YYYY' range={true} />
               </Route>
             </Route>
             <Route path="/with-time/*">

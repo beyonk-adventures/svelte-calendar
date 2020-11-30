@@ -15,7 +15,7 @@
   export let selectableCallback = null
   export let weekStart = 0
   export let styling = new CalendarStyle()
-  export let selected = range ? [ new Date(), new Date() ] : null
+  export let selected = range ? [ new Date(), new Date() ] : [ new Date() ]
   export let closeOnFocusLoss = true
   export let time = false
   export let morning = 7
