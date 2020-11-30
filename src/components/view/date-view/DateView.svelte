@@ -18,7 +18,7 @@
   import { checkIfVisibleDateIsSelectable, shakeDate } from './feedback.js'
   import { contextKey } from '../../lib/context.js'
   // import { createKeyboardHandler } from './keyboard.js'
-  import { getContext, createEventDispatcher, onMount } from 'svelte'
+  import { getContext, createEventDispatcher } from 'svelte'
 
   export let viewContextKey
 

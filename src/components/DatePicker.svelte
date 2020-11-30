@@ -3,6 +3,7 @@
   import { contextKey, setup } from './lib/context'
   import { createEventDispatcher, setContext, getContext, onDestroy } from 'svelte'
   import { CalendarStyle } from '../calendar-style.js'
+  import { createViewContext } from './view-context.js'
   import View from './view/View.svelte'
 
   export let range = false
@@ -48,12 +49,16 @@
     highlighted,
     formatter,
     choices,
+    months,
     pickStartDate,
     pickEndDate, 
     pickStartTime,
     pickEndTime,
     destroy
   } = getContext(contextKey)
+
+  setContext(startContextKey, createViewContext(true, selectedStartDate, months, config))
+  setContext(endContextKey, createViewContext(false, selectedEndDate, months, config))
 
   $: dateChosen = $choices.isDateChosen
 
@@ -141,8 +146,6 @@
     <div class="contents" slot="contents" class:is-range-picker={config.isRangePicker}>
       <View
         viewContextKey={startContextKey}
-        isStart={true}
-        date={selectedStartDate}
         on:date-chosen={() => pickStartDate()}
         on:time-chosen={() => pickStartTime()}
         on:close={() => popover.close()}
@@ -150,8 +153,6 @@
       {#if config.isRangePicker}
       <View
         viewContextKey={endContextKey}
-        isStart={false}
-        date={selectedEndDate}
         on:date-chosen={() => pickEndDate()}
         on:time-chosen={() => pickEndTime()}
         on:close={() => popover.close()}

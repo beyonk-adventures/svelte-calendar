@@ -9,22 +9,16 @@
 
 <script>
   import { contextKey } from '../lib/context'
-  import { createViewContext } from './view-context.js'
-  import { setContext, getContext, onMount, createEventDispatcher } from 'svelte'
+  import { getContext, onMount, createEventDispatcher } from 'svelte'
   import DateView from './date-view/DateView.svelte'
   import TimeView from './time-view/TimeView.svelte'
 
   export let viewContextKey
-  export let isStart
-  export let date
 
   const dispatch = createEventDispatcher()
 
-  const { months, config, choices } = getContext(contextKey)
-  
-  const viewContext = createViewContext(isStart, date, months, config)
-  setContext(viewContextKey, viewContext)
-  const { isDaytime } = viewContext
+  const { config, choices } = getContext(contextKey)
+  const { isDaytime } = getContext(viewContextKey)
 
   let component = DateView
 

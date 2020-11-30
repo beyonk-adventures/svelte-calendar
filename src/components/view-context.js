@@ -1,7 +1,7 @@
 'use strict'
 
 import dayjs from 'dayjs/esm'
-import DateView from './date-view/DateView.svelte'
+import DateView from './view/date-view/DateView.svelte'
 import { derived, writable, get } from 'svelte/store'
 
 function createMonthView (months, year, month) {
