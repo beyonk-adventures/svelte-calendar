@@ -23,7 +23,6 @@
 
 <style>
   .time-container {
-    min-height: 300px;
     padding: 10px;
     display: flex;
     flex: 1 0 auto;
@@ -32,6 +31,12 @@
     align-items: center;
     background-color: white;
     transition: background 0.15s ease;
+  }
+
+  @media (min-height: 600px) {
+    .time-container {
+      min-height: 300px;
+    }
   }
 
   .chosen-date {

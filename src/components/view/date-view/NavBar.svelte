@@ -114,13 +114,20 @@
 <style>
   .heading-section { 
     font-size: 16px;
-    padding: 24px 15px;
+    padding: 6px 15px;
     display: flex;
     width: 100%;
     justify-content: space-between;
     color: #3d4548;
     font-weight: bold;
   }
+
+  @media (min-width: 600px) {
+    .heading-section {
+      padding: 24px 15px;
+    }
+  }
+
   .label,
   .title { 
     cursor: pointer;

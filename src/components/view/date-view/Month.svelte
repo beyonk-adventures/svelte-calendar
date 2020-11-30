@@ -46,21 +46,26 @@
     -ms-grid-rows: 1fr;
   }
 
-  @media (min-width: 600px) {
-    .month-container {
-      display: flex;
-    }
-    .month-week {
-      width: 100%;
-    }
-  }
-
   .legend {
-    display: grid;
+    display: none;
     grid-row: 1 / 2;
     color: #4a4a4a;
     padding: 10px 0;
     margin-bottom: 5px;
+  }
+
+  @media (min-width: 600px) {
+    .month-container {
+      display: flex;
+    }
+
+    .month-week {
+      width: 100%;
+    }
+    
+    .legend {
+      display: grid;
+    }
   }
 
   .legend span {
