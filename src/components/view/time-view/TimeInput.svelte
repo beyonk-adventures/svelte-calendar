@@ -62,5 +62,6 @@
   .controls {
     display: flex;
     justify-content: space-around;
+    color: var(--highlight-color);
   }
 </style>

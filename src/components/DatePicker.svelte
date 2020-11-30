@@ -15,8 +15,7 @@
   export let selectableCallback = null
   export let weekStart = 0
   export let styling = new CalendarStyle()
-  export let selected = new Date()
-  export let selectedEnd = range ? new Date() : null
+  export let selected = range ? [ new Date(), new Date() ] : null
   export let closeOnFocusLoss = true
   export let time = false
   export let morning = 7
@@ -37,7 +36,7 @@
     weekStart
   }
 
-  setContext(contextKey, setup(selected, selectedEnd, config))
+  setContext(contextKey, setup(selected, config))
   const {
     selectedStartDate,
     selectedEndDate,

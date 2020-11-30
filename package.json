@@ -21,7 +21,8 @@
     "es6-object-assign": "^1.1.0",
     "eslint": "^7.14.0",
     "eslint-plugin-svelte3": "^2.7.3",
-    "snowpack": "^2.17.1"
+    "snowpack": "^2.17.1",
+    "tinro": "^0.3.7"
   },
   "eslintConfig": {
     "extends": "@beyonk/eslint-config/svelte"

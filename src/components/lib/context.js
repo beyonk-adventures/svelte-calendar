@@ -34,15 +34,17 @@ function createState (config) {
   }
 }
 
-function setup (selected, selectedEnd, config) {
+function setup (selected, config) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   const months = getMonths(config.start, config.end, config.selectableCallback, config.weekStart)
 
-  const givenDate = (selected.getTime() < config.start.getTime() || selected.getTime() > config.end.getTime()) ? config.start : selected
+  const [ preSelectedStart, preSelectedEnd ] = Array.isArray(selected) ? selected : [ selected, null ]
+
+  const givenDate = (preSelectedStart.getTime() < config.start.getTime() || preSelectedStart.getTime() > config.end.getTime()) ? config.start : preSelectedStart
   const selectedStartDate = writable(givenDate)
-  const selectedEndDate = writable(selectedEnd)
+  const selectedEndDate = writable(preSelectedEnd)
 
   const { formatter } = createFormatter(config.format, selectedStartDate, selectedEndDate, config.isRangePicker)
 

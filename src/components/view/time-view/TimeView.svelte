@@ -36,9 +36,13 @@
 
   .chosen-date {
     margin: 6px 0 12px 0;
-    color: var(--night-mode-text-color);
+    color: var(--button-text-color);
     font-weight: 600;
     font-size: 20px;
+  }
+
+  .time-container.is-night .chosen-date {
+    color: var(--night-mode-text-color);
   }
 
   .time-container.is-night {

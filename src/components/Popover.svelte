@@ -2,17 +2,10 @@
   import { onMount, createEventDispatcher, getContext } from 'svelte'
   import { contextKey } from './lib/context.js'
   import { getTranslate } from './lib/positioning.js'
+  import { once } from './lib/event-handling.js'
 
-  const { isOpen, isClosing, choices, resetChoices } = getContext(contextKey)
+  const { isOpen, isClosing, config, resetChoices } = getContext(contextKey)
   const dispatch = createEventDispatcher()
-
-  const once = (el, evt, cb) => {
-    function handler () {
-      cb.apply(this, arguments)
-      el.removeEventListener(evt, handler)
-    }
-    el.addEventListener(evt, handler)
-  }
 
   let popover
   let w
@@ -42,12 +35,12 @@
   }
 
   onMount(() => {
-    //config.closeOnFocusLoss && document.addEventListener('click', checkForFocusLoss)
+    config.closeOnFocusLoss && document.addEventListener('click', checkForFocusLoss)
     if (!trigger) { return }
     triggerContainer.appendChild(trigger.parentNode.removeChild(trigger))
 
     return () => {
-      //config.closeOnFocusLoss && document.removeEventListener('click', checkForFocusLoss)
+      config.closeOnFocusLoss && document.removeEventListener('click', checkForFocusLoss)
     }
   })
 

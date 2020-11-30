@@ -43,7 +43,7 @@
         class:shake-date={$shouldShakeDate && areDatesEquivalent(day.date, $shouldShakeDate)}
         class:disabled={!day.selectable}
         type="button"
-        on:click={() => dispatch('chosen', { date: day.date })}
+        on:click|stopPropagation={() => dispatch('chosen', { date: day.date })}
       >
         {day.date.getDate()}
       </button>

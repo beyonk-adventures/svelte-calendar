@@ -46,7 +46,7 @@
     box-sizing: border-box;
     position: relative;
     user-select: none;
-    width: 100vw;
+    width: 100%;
     padding-top: 0;
   }
   
