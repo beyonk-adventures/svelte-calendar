@@ -1,5 +1,7 @@
 # svelte-calendar
 
+**THIS PROJECT IS ARCHIVED IN FAVOUR OF https://github.com/beyonk-adventures/svelte-datepicker**
+
 A small date picker built with Svelte 3. Demo available here: [demo page].
 
 This is a temporary fork of [https://github.com/6eDesign/svelte-calendar](https://github.com/6eDesign/svelte-calendar) so that people can use date-range and other unmerged PRs whilst the original maintainer is on hiatus.
