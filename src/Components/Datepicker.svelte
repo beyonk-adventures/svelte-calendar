@@ -291,8 +291,8 @@
     if (config.isRangePicker) {
       if (selected.getMonth() === selectedEnd.getMonth()
       && selected.getFullYear() === selectedEnd.getFullYear()) {
-        secMonth = selected.getMonth() + 1;
-        secYear = selected.getFullYear();
+        secMonth = selected.getMonth() === 11 ? 0 : selected.getMonth() + 1;
+        secYear = selected.getMonth() === 11 ? selected.getFullYear() + 1 : selected.getFullYear();
       } else {
         secMonth = selectedEnd.getMonth();
         secYear = selectedEnd.getFullYear();
